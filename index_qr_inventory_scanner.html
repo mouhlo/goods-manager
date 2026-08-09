@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
+<title>إدارة السلع | نظام إدارة المخزون</title>
+<style>
+:root{
+ --primary:#2563eb;--primary2:#1d4ed8;--bg:#f5f7fb;--card:#fff;--text:#172033;
+ --muted:#7b8497;--border:#e7ebf2;--sidebar:#111827;--success:#16a34a;
+ --danger:#dc2626;--warning:#f59e0b;--shadow:0 8px 30px rgba(15,23,42,.06)
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Tahoma,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.sidebar{position:fixed;right:0;top:0;width:255px;height:100vh;background:var(--sidebar);color:#fff;padding:18px 14px;z-index:1000;transition:.25s;overflow:auto}
+.logo{display:flex;align-items:center;gap:11px;padding:8px 7px 22px}
+.logoIcon{width:45px;height:45px;border-radius:14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:grid;place-items:center;font-size:22px}
+.logo b{font-size:17px}.logo small{display:block;color:#9ca3af;font-size:10px;margin-top:4px}
+.menu{list-style:none}.menu li{margin:3px 0}.menu button{width:100%;border:0;background:transparent;color:#aeb7c8;padding:11px 12px;border-radius:10px;text-align:right;display:flex;align-items:center;gap:11px;font-size:13px}
+.menu button:hover,.menu button.active{background:#1d4ed8;color:#fff}.mi{width:25px;text-align:center;font-size:17px}
+.main{margin-right:255px;min-height:100vh}.topbar{height:72px;background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 25px;position:sticky;top:0;z-index:500}
+.titleRow{display:flex;align-items:center;gap:10px}.title h1{font-size:21px}.title p{font-size:11px;color:var(--muted);margin-top:4px}
+.actions{display:flex;align-items:center;gap:8px}.iconBtn,.mobileBtn{width:39px;height:39px;border:0;border-radius:10px;background:#f1f4f9;color:#334155}.mobileBtn{display:none}.user{display:flex;align-items:center;gap:8px;margin-right:5px}.avatar{width:38px;height:38px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:grid;place-items:center;font-weight:bold}
+.content{padding:24px}.section{display:none}.section.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:18px}.stat{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:17px;display:flex;justify-content:space-between;align-items:center;box-shadow:var(--shadow)}
+.stat p{font-size:12px;color:var(--muted);margin-bottom:7px}.stat h2{font-size:22px}.stat small{font-size:10px;color:var(--success);display:block;margin-top:5px}.statIcon{width:47px;height:47px;border-radius:13px;display:grid;place-items:center;font-size:21px}.blue{background:#dbeafe;color:#2563eb}.green{background:#dcfce7;color:#16a34a}.orange{background:#fef3c7;color:#d97706}.red{background:#fee2e2;color:#dc2626}
+.grid2{display:grid;grid-template-columns:1.5fr 1fr;gap:17px}.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:17px;box-shadow:var(--shadow)}
+.cardHead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.cardHead h3{font-size:15px}.muted{font-size:11px;color:var(--muted)}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-size:12px;display:inline-flex;align-items:center;gap:6px}.primary{background:var(--primary);color:#fff}.primary:hover{background:var(--primary2)}.light{background:#f1f4f8;color:#334155}.dangerBtn{background:#fee2e2;color:#b91c1c}.successBtn{background:#dcfce7;color:#15803d}
+.toolbar{display:flex;gap:9px;margin-bottom:15px;flex-wrap:wrap}.search{flex:1;min-width:190px;border:1px solid var(--border);border-radius:9px;background:var(--card);padding:11px 13px;outline:none;color:var(--text)}.search:focus,input:focus,select:focus{border-color:var(--primary)}
+table{width:100%;border-collapse:collapse}th{text-align:right;color:#8a93a5;font-size:11px;font-weight:500;padding:11px 8px;border-bottom:1px solid var(--border)}td{padding:12px 8px;border-bottom:1px solid var(--border);font-size:12px}tbody tr:hover{background:rgba(37,99,235,.025)}
+.badge{display:inline-block;padding:5px 8px;border-radius:20px;font-size:10px}.badge.green{background:#dcfce7;color:#15803d}.badge.orange{background:#fef3c7;color:#b45309}.badge.red{background:#fee2e2;color:#b91c1c}.badge.blue{background:#dbeafe;color:#1d4ed8}
+.tableWrap{overflow:auto}.empty{text-align:center;color:var(--muted);padding:35px 10px;font-size:13px}
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.product{border:1px solid var(--border);border-radius:14px;overflow:hidden;background:var(--card)}.pimage{height:125px;background:linear-gradient(135deg,#eff6ff,#dbeafe);display:grid;place-items:center;font-size:45px}.pbody{padding:13px}.pbody h3{font-size:13px;margin-bottom:5px}.pbody p{font-size:10px;color:var(--muted)}.pfoot{display:flex;justify-content:space-between;align-items:center;margin-top:12px}.price{font-weight:bold;color:var(--primary);font-size:12px}
+.chart{height:235px;display:flex;align-items:end;gap:10px;padding:15px 8px 30px}.bar{flex:1;max-width:55px;margin:auto;background:linear-gradient(#60a5fa,#2563eb);border-radius:7px 7px 2px 2px;position:relative;min-height:5px}.bar span{position:absolute;top:calc(100% + 8px);width:100%;text-align:center;color:var(--muted);font-size:9px}
+.progress{height:7px;background:#edf1f6;border-radius:20px;overflow:hidden;margin-top:8px}.progress div{height:100%;background:var(--primary);border-radius:20px}
+.alert{display:flex;align-items:center;gap:10px;padding:13px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;margin-bottom:9px}.alert b{font-size:12px}.alert p{font-size:10px;color:var(--muted);margin-top:3px}
+.formGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:11px;color:#667085}.field input,.field select{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px;background:var(--card);color:var(--text);outline:none}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;align-items:center;justify-content:center;padding:15px;z-index:3000}.modal.show{display:flex}.modalBox{width:570px;max-width:100%;max-height:90vh;overflow:auto;background:var(--card);border-radius:18px;padding:20px}.modalHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.close{width:34px;height:34px;border:0;border-radius:9px;background:#f1f4f8}.modalFoot{display:flex;gap:8px;margin-top:18px}
+.kpi{font-size:27px;font-weight:700}.reportGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.reportBox{padding:18px;border:1px solid var(--border);border-radius:14px;background:var(--card)}.reportBox h4{font-size:12px;color:var(--muted);margin-bottom:8px}
+.toast{position:fixed;left:20px;bottom:20px;background:#111827;color:#fff;padding:12px 15px;border-radius:10px;font-size:12px;opacity:0;transform:translateY(15px);transition:.25s;z-index:5000}.toast.show{opacity:1;transform:none}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:900}.overlay.show{display:block}
+.dark{--bg:#0b1220;--card:#111b2e;--text:#f8fafc;--muted:#94a3b8;--border:#26344b}.dark .topbar{background:#111b2e}.dark .light,.dark .iconBtn,.dark .mobileBtn,.dark .close{background:#1e293b;color:#e2e8f0}.dark .pimage{background:#172554}.dark .progress{background:#26344b}
+@media(max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)}.products{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:800px){.sidebar{transform:translateX(100%);box-shadow:-10px 0 30px rgba(0,0,0,.2)}.sidebar.open{transform:translateX(0)}.main{margin-right:0}.mobileBtn{display:block}.grid2{grid-template-columns:1fr}.content{padding:15px}.topbar{padding:0 14px}.user{display:none}.reportGrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.stats{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}.formGrid{grid-template-columns:1fr}.reportGrid{grid-template-columns:1fr}.title h1{font-size:18px}.content{padding:11px}.card{padding:14px}}
+
+.activationGate{position:fixed;inset:0;background:linear-gradient(135deg,#0f172a,#1e3a8a);display:none;align-items:center;justify-content:center;padding:18px;z-index:99999}
+.activationGate.show{display:flex}.activationCard{width:430px;max-width:100%;background:#fff;border-radius:24px;padding:28px;box-shadow:0 25px 70px rgba(0,0,0,.35);text-align:center}.activationLogo{width:70px;height:70px;margin:0 auto 14px;border-radius:20px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:grid;place-items:center;font-size:34px}.activationCard h2{margin-bottom:8px}.activationCard p{font-size:12px;color:#64748b;line-height:1.8;margin-bottom:18px}.activationInput{width:100%;padding:14px;border:1px solid #dbe2ea;border-radius:12px;text-align:center;letter-spacing:2px;text-transform:uppercase;outline:none;margin-bottom:10px}.activationInput:focus{border-color:#2563eb}.activationError{color:#dc2626;font-size:11px;min-height:18px;margin-bottom:8px}.qrBox{display:flex;justify-content:center;align-items:center;background:#fff;padding:18px;border:1px solid var(--border);border-radius:14px;margin:8px auto 15px;min-height:230px}.qrInfo{font-size:11px;color:var(--muted);line-height:1.8;text-align:center}
+
+.scanBox{background:#0f172a;border-radius:16px;padding:10px;overflow:hidden}.scanBox #qr-reader{width:100%}.scanResult{margin-top:10px;padding:12px;border-radius:12px;background:#f1f5f9;text-align:center;font-size:12px;line-height:1.8}.scanResult.ok{background:#dcfce7;color:#166534}.scanResult.bad{background:#fee2e2;color:#991b1b}
+</style>
+<style>
+#splashScreen{position:fixed;inset:0;z-index:100000;background:linear-gradient(135deg,#0f172a,#2563eb);display:flex;align-items:center;justify-content:center;color:#fff;transition:opacity .45s ease}
+#splashScreen.hide{opacity:0;pointer-events:none}
+.splashBox{text-align:center;animation:splashIn .7s ease}
+.splashIcon{width:88px;height:88px;border-radius:24px;background:rgba(255,255,255,.15);display:grid;place-items:center;font-size:44px;margin:0 auto 18px;box-shadow:0 15px 40px rgba(0,0,0,.2)}
+.splashBox h1{margin:0 0 8px;font-size:30px}.splashBox p{margin:0;color:#dbeafe;font-size:15px}
+@keyframes splashIn{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
+</style></head>
+<body><div id="splashScreen"><div class="splashBox"><div class="splashIcon">📦</div><h1>إدارة السلع</h1><p>مرحبًا 👋</p></div></div>
+
+
+<aside class="sidebar" id="sidebar">
+ <div class="logo"><div class="logoIcon">📦</div><div><b>إدارة السلع</b><small>نظام إدارة المخزون</small></div></div>
+ <ul class="menu" id="menu">
+  <li><button class="active" data-section="dashboard"><span class="mi">🏠</span>الرئيسية</button></li>
+  <li><button data-section="products"><span class="mi">📦</span>المنتجات</button></li>
+  <li><button data-section="categories"><span class="mi">🏷️</span>التصنيفات</button></li>
+  <li><button data-section="inventory"><span class="mi">📊</span>المخزون</button></li>
+  <li><button data-section="sales"><span class="mi">🛒</span>المبيعات</button></li>
+  <li><button data-section="purchases"><span class="mi">🚚</span>المشتريات</button></li>
+  <li><button data-section="customers"><span class="mi">👥</span>العملاء</button></li>
+  <li><button data-section="suppliers"><span class="mi">🏢</span>الموردون</button></li>
+  <li><button data-section="finance"><span class="mi">💰</span>المصاريف والأرباح</button></li>
+  <li><button data-section="reports"><span class="mi">📈</span>التقارير</button></li>
+  <li><button data-section="alerts"><span class="mi">🔔</span>التنبيهات</button></li>
+  <li><button data-section="settings"><span class="mi">⚙️</span>الإعدادات</button></li>
+ </ul>
+</aside>
+<div class="overlay" id="overlay"></div>
+
+<main class="main">
+<header class="topbar">
+ <div class="titleRow">
+  <button class="mobileBtn" id="mobileBtn">☰</button>
+  <div class="title"><h1 id="pageTitle">الرئيسية</h1><p>لوحة تحكم ذكية لإدارة السلع</p></div>
+ </div>
+ <div class="actions">
+  <button class="iconBtn" id="notifyBtn">🔔</button>
+  <button class="iconBtn" id="darkBtn">🌙</button>
+  <div class="user"><div><b style="font-size:12px">المدير</b><small style="display:block;color:var(--muted);font-size:9px">مدير النظام</small></div><div class="avatar">م</div></div>
+ </div>
+</header>
+
+<div class="content">
+
+<section id="dashboard" class="section active">
+ <div class="stats" id="dashboardStats"></div>
+ <div class="grid2">
+  <div class="card"><div class="cardHead"><h3>المبيعات خلال الأسبوع</h3><span class="muted">آخر 7 أيام</span></div><div class="chart" id="salesChart"></div></div>
+  <div class="card"><div class="cardHead"><h3>أكثر المنتجات حركة</h3><span class="muted">حسب المخزون</span></div><div id="topProducts"></div></div>
+ </div>
+ <div class="card"><div class="cardHead"><h3>آخر المبيعات</h3><button class="btn light" data-go="sales">عرض الكل</button></div><div class="tableWrap"><table><thead><tr><th>الفاتورة</th><th>العميل</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th></tr></thead><tbody id="recentSales"></tbody></table></div></div>
+</section>
+
+<section id="products" class="section">
+ <div class="card">
+  <div class="cardHead"><div><h3>المنتجات</h3><span class="muted">إدارة السلع والأسعار والكميات</span></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn light" id="scanProductBtn">📷 مسح QR</button><button class="btn primary" id="addProductBtn">＋ إضافة منتج</button></div></div>
+  <div class="toolbar"><input class="search" id="productSearch" placeholder="🔍 ابحث باسم المنتج أو الباركود..."><select class="search" style="max-width:180px" id="productCategoryFilter"><option value="">كل التصنيفات</option></select></div>
+  <div class="products" id="productsGrid"></div>
+ </div>
+</section>
+
+<section id="categories" class="section">
+ <div class="card"><div class="cardHead"><h3>التصنيفات</h3><button class="btn primary" id="addCategoryBtn">＋ إضافة تصنيف</button></div><div class="products" id="categoriesGrid"></div></div>
+</section>
+
+<section id="inventory" class="section">
+ <div class="stats" id="inventoryStats"></div>
+ <div class="card"><div class="cardHead"><h3>حالة المخزون</h3><button class="btn light" id="stockAdjustBtn">＋ حركة مخزون</button></div><div class="tableWrap"><table><thead><tr><th>المنتج</th><th>الكمية</th><th>الحد الأدنى</th><th>القيمة</th><th>الحالة</th><th>إجراء</th></tr></thead><tbody id="inventoryTable"></tbody></table></div></div>
+</section>
+
+<section id="sales" class="section">
+ <div class="card"><div class="cardHead"><div><h3>المبيعات</h3><span class="muted">الفواتير وعمليات البيع</span></div><button class="btn primary" id="addSaleBtn">＋ فاتورة جديدة</button></div>
+ <div class="toolbar"><input class="search" id="salesSearch" placeholder="🔍 ابحث برقم الفاتورة أو اسم العميل..."></div>
+ <div class="tableWrap"><table><thead><tr><th>الفاتورة</th><th>العميل</th><th>المنتج</th><th>الكمية</th><th>الإجمالي</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="salesTable"></tbody></table></div></div>
+</section>
+
+<section id="purchases" class="section">
+ <div class="card"><div class="cardHead"><div><h3>المشتريات</h3><span class="muted">إدخال السلع من الموردين</span></div><button class="btn primary" id="addPurchaseBtn">＋ شراء جديد</button></div>
+ <div class="tableWrap"><table><thead><tr><th>العملية</th><th>المورد</th><th>المنتج</th><th>الكمية</th><th>التكلفة</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="purchasesTable"></tbody></table></div></div>
+</section>
+
+<section id="customers" class="section">
+ <div class="card"><div class="cardHead"><h3>العملاء</h3><button class="btn primary" id="addCustomerBtn">＋ إضافة عميل</button></div>
+ <div class="tableWrap"><table><thead><tr><th>الاسم</th><th>الهاتف</th><th>المشتريات</th><th>المديونية</th><th>إجراء</th></tr></thead><tbody id="customersTable"></tbody></table></div></div>
+</section>
+
+<section id="suppliers" class="section">
+ <div class="card"><div class="cardHead"><h3>الموردون</h3><button class="btn primary" id="addSupplierBtn">＋ إضافة مورد</button></div>
+ <div class="tableWrap"><table><thead><tr><th>المورد</th><th>الهاتف</th><th>المشتريات</th><th>المستحقات</th><th>إجراء</th></tr></thead><tbody id="suppliersTable"></tbody></table></div></div>
+</section>
+
+<section id="finance" class="section">
+ <div class="stats" id="financeStats"></div>
+ <div class="card"><div class="cardHead"><h3>المصاريف</h3><button class="btn primary" id="addExpenseBtn">＋ إضافة مصروف</button></div><div class="tableWrap"><table><thead><tr><th>النوع</th><th>الوصف</th><th>المبلغ</th><th>التاريخ</th><th>إجراء</th></tr></thead><tbody id="expensesTable"></tbody></table></div></div>
+</section>
+
+<section id="reports" class="section">
+ <div class="reportGrid" id="reportBoxes"></div>
+ <div class="card"><div class="cardHead"><h3>تحليل المبيعات</h3><span class="muted">ملخص مباشر من البيانات</span></div><div class="chart" id="reportChart"></div></div>
+ <div class="card"><div class="cardHead"><h3>تصدير البيانات</h3></div><button class="btn primary" id="exportBtn">⬇️ تصدير نسخة JSON</button></div>
+</section>
+
+<section id="alerts" class="section">
+ <div class="card"><div class="cardHead"><h3>التنبيهات</h3><span class="muted" id="alertCount"></span></div><div id="alertsList"></div></div>
+</section>
+
+<section id="settings" class="section">
+ <div class="card"><div class="cardHead"><h3>إعدادات المتجر</h3></div><div class="formGrid">
+  <div class="field"><label>اسم المتجر</label><input id="storeName" value="متجري"></div>
+  <div class="field"><label>العملة</label><select id="currency"><option value="دج">الدينار الجزائري (دج)</option><option value="$">الدولار ($)</option><option value="€">اليورو (€)</option></select></div>
+  <div class="field"><label>الهاتف</label><input id="storePhone" placeholder="05xxxxxxxx"></div>
+  <div class="field"><label>البريد الإلكتروني</label><input id="storeEmail" placeholder="example@email.com"></div>
+ </div><div style="margin-top:17px"><button class="btn primary" id="saveSettings">💾 حفظ الإعدادات</button></div></div>
+ <div class="card"><div class="cardHead"><h3>البيانات</h3></div><p class="muted" style="margin-bottom:12px">يمكنك إعادة بيانات التطبيق التجريبية أو مسح كل البيانات المحفوظة.</p><button class="btn light" id="resetData">↻ إعادة البيانات التجريبية</button> <button class="btn dangerBtn" id="clearData">🗑️ مسح كل البيانات</button></div>
+</section>
+
+</div>
+</main>
+
+
+<div class="activationGate" id="activationGate">
+  <div class="activationCard">
+    <div class="activationLogo">🔐</div>
+    <h2>تفعيل إدارة السلع</h2>
+    <p>أدخل مفتاح التفعيل لبدء استخدام التطبيق. كل مفتاح يمكن استخدامه مرة واحدة فقط على هذا الجهاز.</p>
+    <input class="activationInput" id="activationInput" maxlength="19" placeholder="XXXX-XXXX-XXXX-XXXX">
+    <div class="activationError" id="activationError"></div>
+    <button class="btn primary" style="width:100%;justify-content:center;padding:13px" id="activateBtn">🔓 تفعيل التطبيق</button>
+    <div style="margin-top:13px;font-size:9px;color:#94a3b8">نظام تفعيل محلي — احفظ مفاتيحك في مكان آمن</div>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="modalBox"><div class="modalHead"><h3 id="modalTitle">إضافة</h3><button class="close" id="closeModal">✕</button></div><div id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<script>
+const KEY="goods_manager_v2";
+const defaultData={
+ products:[
+  {id:1,name:"هاتف ذكي Pro",category:"إلكترونيات",price:85000,cost:68000,qty:25,min:10,barcode:"100001",icon:"📱"},
+  {id:2,name:"سماعات لاسلكية",category:"إكسسوارات",price:7500,cost:4500,qty:48,min:12,barcode:"100002",icon:"🎧"},
+  {id:3,name:"ساعة ذكية",category:"إلكترونيات",price:15000,cost:9500,qty:8,min:10,barcode:"100003",icon:"⌚"},
+  {id:4,name:"حاسوب محمول",category:"أجهزة",price:125000,cost:98000,qty:2,min:8,barcode:"100004",icon:"💻"},
+  {id:5,name:"لوحة مفاتيح",category:"إكسسوارات",price:4200,cost:2500,qty:31,min:8,barcode:"100005",icon:"⌨️"},
+  {id:6,name:"طابعة",category:"أجهزة",price:38000,cost:29000,qty:11,min:5,barcode:"100006",icon:"🖨️"}
+ ],
+ categories:["إلكترونيات","إكسسوارات","أجهزة","ملابس","المنزل","الألعاب"],
+ sales:[
+  {id:1025,customer:"محمد علي",productId:1,qty:1,total:85000,date:"2026-08-09"},
+  {id:1024,customer:"أحمد كريم",productId:2,qty:2,total:15000,date:"2026-08-08"},
+  {id:1023,customer:"يوسف محمد",productId:3,qty:1,total:15000,date:"2026-08-07"}
+ ],
+ purchases:[
+  {id:5001,supplier:"شركة النور",productId:1,qty:5,total:340000,date:"2026-08-08"},
+  {id:5002,supplier:"مؤسسة المستقبل",productId:4,qty:3,total:294000,date:"2026-08-07"}
+ ],
+ customers:[
+  {id:1,name:"محمد علي",phone:"0550000000",debt:0},
+  {id:2,name:"أحمد كريم",phone:"0660000000",debt:15000},
+  {id:3,name:"يوسف محمد",phone:"0770000000",debt:0}
+ ],
+ suppliers:[
+  {id:1,name:"شركة النور",phone:"0555112233",debt:120000},
+  {id:2,name:"مؤسسة المستقبل",phone:"0666223344",debt:0}
+ ],
+ expenses:[
+  {id:1,type:"نقل",desc:"نقل البضائع",amount:15000,date:"2026-08-08"},
+  {id:2,type:"كهرباء",desc:"فاتورة الكهرباء",amount:8500,date:"2026-08-07"},
+  {id:3,type:"إيجار",desc:"إيجار المحل",amount:50000,date:"2026-08-01"}
+ ],
+ settings:{storeName:"متجري",currency:"دج",phone:"",email:""},
+ scanHistory:[]
+};
+let data=load();
+let currentSection="dashboard";
+
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY));if(!x)return clone(defaultData);if(!Array.isArray(x.scanHistory))x.scanHistory=[];return x}catch(e){return clone(defaultData)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
+function money(n){return new Intl.NumberFormat("ar-DZ").format(Math.round(Number(n)||0))+" "+data.settings.currency}
+function dateNow(){return new Date().toISOString().slice(0,10)}
+function product(id){return data.products.find(p=>p.id==id)}
+function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+function empty(msg="لا توجد بيانات"){return `<div class="empty">${msg}</div>`}
+
+const titles={dashboard:"الرئيسية",products:"المنتجات",categories:"التصنيفات",inventory:"المخزون",sales:"المبيعات",purchases:"المشتريات",customers:"العملاء",suppliers:"الموردون",finance:"المصاريف والأرباح",reports:"التقارير",alerts:"التنبيهات",settings:"الإعدادات"};
+
+function go(id){
+ currentSection=id;
+ document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===id));
+ document.querySelectorAll("#menu button").forEach(b=>b.classList.toggle("active",b.dataset.section===id));
+ document.getElementById("pageTitle").textContent=titles[id];
+ document.getElementById("sidebar").classList.remove("open");
+ document.getElementById("overlay").classList.remove("show");
+ renderAll();
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll("#menu button").forEach(b=>b.onclick=()=>go(b.dataset.section));
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>go(b.dataset.go));
+document.getElementById("mobileBtn").onclick=()=>{document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("show")};
+document.getElementById("overlay").onclick=()=>{document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("show")};
+document.getElementById("notifyBtn").onclick=()=>go("alerts");
+document.getElementById("darkBtn").onclick=()=>document.body.classList.toggle("dark");
+
+function renderDashboard(){
+ const revenue=data.sales.reduce((a,s)=>a+s.total,0), costs=data.sales.reduce((a,s)=>{const p=product(s.productId);return a+(p?p.cost*s.qty:0)},0);
+ const stock=data.products.reduce((a,p)=>a+p.qty,0), low=data.products.filter(p=>p.qty<=p.min).length, profit=revenue-costs-data.expenses.reduce((a,e)=>a+e.amount,0);
+ document.getElementById("dashboardStats").innerHTML=[
+  ["إجمالي المنتجات",data.products.length,"📦","blue","إدارة كاملة للسلع"],
+  ["قيمة المخزون",money(data.products.reduce((a,p)=>a+p.cost*p.qty,0)),"🏷️","orange",stock+" قطعة"],
+  ["إجمالي المبيعات",money(revenue),"💰","green",data.sales.length+" فاتورة"],
+  ["صافي الربح",money(profit),"📈","green",profit>=0?"نتيجة إيجابية":"تحتاج مراجعة"]
+ ].map(x=>`<div class="stat"><div><p>${x[0]}</p><h2>${x[1]}</h2><small>${x[4]}</small></div><div class="statIcon ${x[3]}">${x[2]}</div></div>`).join("");
+ const max=Math.max(...data.sales.map(s=>s.total),1);
+ const labels=["الأحد","الإثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","اليوم"];
+ document.getElementById("salesChart").innerHTML=labels.map((d,i)=>{const s=data.sales[data.sales.length-1-i];const h=s?Math.max(12,Math.round(s.total/max*90)):8;return `<div class="bar" style="height:${h}%"><span>${d}</span></div>`}).join("");
+ document.getElementById("topProducts").innerHTML=data.products.slice().sort((a,b)=>b.qty-a.qty).slice(0,4).map((p,i)=>`<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;font-size:11px"><span>${p.icon} ${p.name}</span><b>${p.qty}</b></div><div class="progress"><div style="width:${Math.min(100,p.qty*2)}%"></div></div></div>`).join("");
+ document.getElementById("recentSales").innerHTML=data.sales.slice().reverse().slice(0,5).map(s=>`<tr><td>#INV-${s.id}</td><td>${s.customer}</td><td>${money(s.total)}</td><td>${s.date}</td><td><span class="badge green">مكتملة</span></td></tr>`).join("")||`<tr><td colspan="5">${empty()}</td></tr>`;
+}
+
+function renderProducts(){
+ const q=(document.getElementById("productSearch")?.value||"").toLowerCase(), cat=document.getElementById("productCategoryFilter")?.value||"";
+ document.getElementById("productCategoryFilter").innerHTML=`<option value="">كل التصنيفات</option>`+data.categories.map(c=>`<option ${c===cat?"selected":""}>${c}</option>`).join("");
+ const arr=data.products.filter(p=>(p.name+" "+p.barcode).toLowerCase().includes(q)&&(!cat||p.category===cat));
+ document.getElementById("productsGrid").innerHTML=arr.map(p=>`<div class="product"><div class="pimage">${p.icon}</div><div class="pbody"><h3>${p.name}</h3><p>${p.category} · باركود ${p.barcode}</p><div class="pfoot"><span class="price">${money(p.price)}</span><span class="badge ${p.qty<=p.min?"orange":"green"}">${p.qty} قطعة</span></div><div style="display:flex;gap:6px;margin-top:10px"><button class="btn light" onclick="editProduct(${p.id})">✏️ تعديل</button><button class="btn light" onclick="showProductQR(${p.id})">▣ QR</button><button class="btn dangerBtn" onclick="deleteProduct(${p.id})">🗑️</button></div></div></div>`).join("")||empty("لم يتم العثور على منتجات");
+}
+
+function renderCategories(){
+ document.getElementById("categoriesGrid").innerHTML=data.categories.map((c,i)=>`<div class="product"><div class="pimage">${["📱","🎧","💻","👕","🏠","🎮"][i%6]}</div><div class="pbody"><h3>${c}</h3><p>${data.products.filter(p=>p.category===c).length} منتج</p><div style="margin-top:12px"><button class="btn dangerBtn" onclick="deleteCategory(${i})">حذف</button></div></div></div>`).join("");
+}
+
+function renderInventory(){
+ const low=data.products.filter(p=>p.qty<=p.min).length, value=data.products.reduce((a,p)=>a+p.cost*p.qty,0), out=data.products.filter(p=>p.qty===0).length;
+ document.getElementById("inventoryStats").innerHTML=[
+  ["إجمالي القطع",data.products.reduce((a,p)=>a+p.qty,0),"📦","blue"],
+  ["قيمة المخزون",money(value),"💰","green"],
+  ["مخزون منخفض",low,"⚠️","orange"],
+  ["منتجات نافدة",out,"❌","red"]
+ ].map(x=>`<div class="stat"><div><p>${x[0]}</p><h2>${x[1]}</h2></div><div class="statIcon ${x[3]}">${x[2]}</div></div>`).join("");
+ document.getElementById("inventoryTable").innerHTML=data.products.map(p=>`<tr><td>${p.icon} ${p.name}</td><td>${p.qty}</td><td>${p.min}</td><td>${money(p.cost*p.qty)}</td><td><span class="badge ${p.qty===0?"red":p.qty<=p.min?"orange":"green"}">${p.qty===0?"نافد":p.qty<=p.min?"منخفض":"جيد"}</span></td><td><button class="btn light" onclick="adjustStock(${p.id})">± كمية</button></td></tr>`).join("");
+}
+
+function renderSales(){
+ const q=(document.getElementById("salesSearch")?.value||"").toLowerCase();
+ document.getElementById("salesTable").innerHTML=data.sales.slice().reverse().filter(s=>("#INV-"+s.id+" "+s.customer).toLowerCase().includes(q)).map(s=>{const p=product(s.productId);return `<tr><td>#INV-${s.id}</td><td>${s.customer}</td><td>${p?p.name:"-"}</td><td>${s.qty}</td><td>${money(s.total)}</td><td>${s.date}</td><td><button class="btn dangerBtn" onclick="deleteSale(${s.id})">حذف</button></td></tr>`}).join("")||`<tr><td colspan="7">${empty()}</td></tr>`;
+}
+function renderPurchases(){document.getElementById("purchasesTable").innerHTML=data.purchases.slice().reverse().map(s=>{const p=product(s.productId);return `<tr><td>#PUR-${s.id}</td><td>${s.supplier}</td><td>${p?p.name:"-"}</td><td>${s.qty}</td><td>${money(s.total)}</td><td>${s.date}</td><td><button class="btn dangerBtn" onclick="deletePurchase(${s.id})">حذف</button></td></tr>`}).join("")||`<tr><td colspan="7">${empty()}</td></tr>`}
+function renderCustomers(){document.getElementById("customersTable").innerHTML=data.customers.map(c=>`<tr><td>${c.name}</td><td>${c.phone||"-"}</td><td>${data.sales.filter(s=>s.customer===c.name).length}</td><td>${money(c.debt)}</td><td><button class="btn light" onclick="editCustomer(${c.id})">✏️</button> <button class="btn dangerBtn" onclick="deleteCustomer(${c.id})">🗑️</button></td></tr>`).join("")||`<tr><td colspan="5">${empty()}</td></tr>`}
+function renderSuppliers(){document.getElementById("suppliersTable").innerHTML=data.suppliers.map(s=>`<tr><td>${s.name}</td><td>${s.phone||"-"}</td><td>${data.purchases.filter(p=>p.supplier===s.name).length}</td><td>${money(s.debt)}</td><td><button class="btn light" onclick="editSupplier(${s.id})">✏️</button> <button class="btn dangerBtn" onclick="deleteSupplier(${s.id})">🗑️</button></td></tr>`).join("")||`<tr><td colspan="5">${empty()}</td></tr>`}
+function renderFinance(){const rev=data.sales.reduce((a,s)=>a+s.total,0),buy=data.purchases.reduce((a,s)=>a+s.total,0),exp=data.expenses.reduce((a,e)=>a+e.amount,0),profit=rev-buy-exp;document.getElementById("financeStats").innerHTML=[["المبيعات",money(rev),"💰","green"],["المشتريات",money(buy),"🛒","orange"],["المصاريف",money(exp),"💸","red"],["النتيجة",money(profit),"📈",profit>=0?"green":"red"]].map(x=>`<div class="stat"><div><p>${x[0]}</p><h2>${x[1]}</h2></div><div class="statIcon ${x[3]}">${x[2]}</div></div>`).join("");document.getElementById("expensesTable").innerHTML=data.expenses.slice().reverse().map(e=>`<tr><td>${e.type}</td><td>${e.desc}</td><td>${money(e.amount)}</td><td>${e.date}</td><td><button class="btn dangerBtn" onclick="deleteExpense(${e.id})">حذف</button></td></tr>`).join("")||`<tr><td colspan="5">${empty()}</td></tr>`}
+function renderReports(){const rev=data.sales.reduce((a,s)=>a+s.total,0),buy=data.purchases.reduce((a,s)=>a+s.total,0),exp=data.expenses.reduce((a,e)=>a+e.amount,0),stock=data.products.reduce((a,p)=>a+p.cost*p.qty,0);document.getElementById("reportBoxes").innerHTML=[["إجمالي المبيعات",money(rev)],["إجمالي المشتريات",money(buy)],["المصاريف",money(exp)],["قيمة المخزون",money(stock)],["عدد المنتجات",data.products.length],["عدد الفواتير",data.sales.length]].map(x=>`<div class="reportBox"><h4>${x[0]}</h4><div class="kpi">${x[1]}</div></div>`).join("");const vals=data.sales.slice(-7).map(s=>s.total),max=Math.max(...vals,1);document.getElementById("reportChart").innerHTML=vals.map((v,i)=>`<div class="bar" style="height:${Math.max(10,v/max*90)}%"><span>${i+1}</span></div>`).join("")||empty()}
+function renderAlerts(){const alerts=data.products.filter(p=>p.qty<=p.min).map(p=>`<div class="alert"><div>⚠️</div><div><b>مخزون منخفض: ${p.name}</b><p>المتوفر ${p.qty} والحد الأدنى ${p.min}</p></div></div>`);document.getElementById("alertCount").textContent=alerts.length+" تنبيه";document.getElementById("alertsList").innerHTML=alerts.join("")||`<div class="empty">🎉 لا توجد تنبيهات حالياً</div>`}
+function renderSettings(){document.getElementById("storeName").value=data.settings.storeName;document.getElementById("currency").value=data.settings.currency;document.getElementById("storePhone").value=data.settings.phone;document.getElementById("storeEmail").value=data.settings.email}
+function renderAll(){renderDashboard();renderProducts();renderCategories();renderInventory();renderSales();renderPurchases();renderCustomers();renderSuppliers();renderFinance();renderReports();renderAlerts();renderSettings()}
+
+function openModal(title,body,onSave){document.getElementById("modalTitle").textContent=title;document.getElementById("modalBody").innerHTML=body;document.getElementById("modal").classList.add("show");document.getElementById("modalSave")?.addEventListener("click",()=>{if(onSave())document.getElementById("modal").classList.remove("show")})}
+document.getElementById("closeModal").onclick=()=>document.getElementById("modal").classList.remove("show");
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")e.currentTarget.classList.remove("show")});
+
+function productForm(p={}){return `<div class="formGrid"><div class="field"><label>اسم المنتج *</label><input id="f_name" value="${p.name||""}"></div><div class="field"><label>التصنيف</label><select id="f_cat">${data.categories.map(c=>`<option ${c===p.category?"selected":""}>${c}</option>`).join("")}</select></div><div class="field"><label>سعر البيع *</label><input id="f_price" type="number" value="${p.price||""}"></div><div class="field"><label>سعر الشراء *</label><input id="f_cost" type="number" value="${p.cost||""}"></div><div class="field"><label>الكمية *</label><input id="f_qty" type="number" value="${p.qty??0}"></div><div class="field"><label>الحد الأدنى</label><input id="f_min" type="number" value="${p.min??5}"></div><div class="field"><label>الباركود</label><input id="f_barcode" value="${p.barcode||""}"></div><div class="field"><label>الأيقونة</label><input id="f_icon" value="${p.icon||"📦"}"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">💾 حفظ المنتج</button><button class="btn light" onclick="document.getElementById('modal').classList.remove('show')">إلغاء</button></div>`}
+let activeQrScanner=null, lastScanText="", lastScanAt=0;
+function findProductFromQR(text){
+ text=String(text||"").trim();
+ let p=null;
+ if(text.startsWith("GOODS:")){
+   const parts=text.split(":");
+   p=product(parts[1]);
+   if(!p && parts[2])p=data.products.find(x=>String(x.barcode)===String(parts[2]));
+ }
+ if(!p){
+   try{const obj=JSON.parse(text); if(obj.productId)p=product(obj.productId); if(!p&&obj.barcode)p=data.products.find(x=>String(x.barcode)===String(obj.barcode));}catch(e){}
+ }
+ if(!p)p=data.products.find(x=>String(x.barcode)===text);
+ return p;
+}
+function scanAndDecrease(text){
+ const now=Date.now();
+ if(text===lastScanText && now-lastScanAt<1500)return;
+ lastScanText=text;lastScanAt=now;
+ const p=findProductFromQR(text), box=document.getElementById("scanResult");
+ if(!p){if(box){box.className="scanResult bad";box.innerHTML="❌ لم يتم العثور على سلعة مرتبطة بهذا QR.";}return;}
+ if(p.qty<=0){if(box){box.className="scanResult bad";box.innerHTML=`⚠️ ${p.name}<br>المخزون نفد، لا يمكن خصم قطعة.`;}return;}
+ p.qty-=1;
+ data.scanHistory.push({id:Date.now(),productId:p.id,barcode:p.barcode,date:dateNow(),time:new Date().toLocaleTimeString("ar-DZ")});
+ save();
+ const updated=product(p.id);
+ if(box){box.className="scanResult ok";box.innerHTML=`✅ تم خصم قطعة واحدة<br><b>${updated.name}</b><br>المخزون المتبقي: <b>${updated.qty}</b><br>عدد عمليات المسح المسجلة: ${data.scanHistory.filter(x=>x.productId==updated.id).length}`;}
+ toast(`تم خصم قطعة من ${updated.name}`);
+}
+function stopQRScanner(){if(activeQrScanner){activeQrScanner.stop().catch(()=>{});activeQrScanner.clear().catch(()=>{});activeQrScanner=null;}}
+function openQRScanner(){
+ if(!window.Html5Qrcode)return alert("قارئ QR غير متاح. تأكد من اتصال الإنترنت.");
+ openModal("مسح QR وخصم من المخزون",`<div class="scanBox"><div id="qr-reader"></div></div><div id="scanResult" class="scanResult">وجّه الكاميرا نحو QR الخاص بالسلعة.</div><div class="modalFoot"><button class="btn light" id="stopScanBtn">إغلاق الكاميرا</button></div>`,()=>{stopQRScanner();return true;});
+ document.getElementById("stopScanBtn").onclick=()=>{stopQRScanner();document.getElementById("modal").classList.remove("show")};
+ activeQrScanner=new Html5Qrcode("qr-reader");
+ activeQrScanner.start({facingMode:"environment"},{fps:10,qrbox:{width:240,height:240}},scanAndDecrease,()=>{}).catch(err=>{const box=document.getElementById("scanResult");if(box){box.className="scanResult bad";box.innerHTML="❌ تعذر تشغيل الكاميرا. اسمح للتطبيق باستخدام الكاميرا ثم حاول مرة أخرى.";}});
+}
+document.getElementById("scanProductBtn").onclick=openQRScanner;
+
+document.getElementById("addProductBtn").onclick=()=>openModal("إضافة منتج جديد",productForm(),()=>{const name=f("f_name");if(!name)return alert("أدخل اسم المنتج");data.products.push({id:Date.now(),name,category:f("f_cat"),price:+f("f_price")||0,cost:+f("f_cost")||0,qty:+f("f_qty")||0,min:+f("f_min")||0,barcode:f("f_barcode")||String(Date.now()).slice(-6),icon:f("f_icon")||"📦"});save();toast("تمت إضافة المنتج");return true});
+function editProduct(id){const p=product(id);openModal("تعديل المنتج",productForm(p),()=>{p.name=f("f_name");p.category=f("f_cat");p.price=+f("f_price")||0;p.cost=+f("f_cost")||0;p.qty=+f("f_qty")||0;p.min=+f("f_min")||0;p.barcode=f("f_barcode");p.icon=f("f_icon")||"📦";save();toast("تم تحديث المنتج");return true})}
+function deleteProduct(id){if(confirm("هل تريد حذف المنتج؟")){data.products=data.products.filter(p=>p.id!==id);save();toast("تم حذف المنتج")}}
+function f(id){return document.getElementById(id)?.value.trim()||""}
+
+document.getElementById("addCategoryBtn").onclick=()=>openModal("إضافة تصنيف",`<div class="field"><label>اسم التصنيف</label><input id="catName" placeholder="مثال: مواد غذائية"></div><div class="modalFoot"><button class="btn primary" id="modalSave">إضافة</button></div>`,()=>{const n=f("catName");if(!n)return alert("أدخل اسم التصنيف");if(data.categories.includes(n))return alert("التصنيف موجود");data.categories.push(n);save();toast("تمت إضافة التصنيف");return true});
+function deleteCategory(i){const c=data.categories[i];if(data.products.some(p=>p.category===c))return alert("لا يمكن حذف تصنيف يحتوي على منتجات.");if(confirm("حذف التصنيف؟")){data.categories.splice(i,1);save();toast("تم حذف التصنيف")}}
+
+document.getElementById("addSaleBtn").onclick=()=>openModal("إنشاء فاتورة بيع",`<div class="formGrid"><div class="field"><label>العميل</label><input id="s_customer" value="عميل نقدي"></div><div class="field"><label>المنتج</label><select id="s_product">${data.products.map(p=>`<option value="${p.id}">${p.name} — ${money(p.price)}</option>`).join("")}</select></div><div class="field"><label>الكمية</label><input id="s_qty" type="number" min="1" value="1"></div><div class="field"><label>طريقة الدفع</label><select id="s_pay"><option>نقدي</option><option>بطاقة</option><option>آجل</option></select></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">إتمام البيع</button></div>`,()=>{const p=product(+f("s_product")),q=+f("s_qty");if(!p||q<1)return alert("بيانات غير صحيحة");if(p.qty<q)return alert("الكمية المتوفرة غير كافية");p.qty-=q;data.sales.push({id:Date.now().toString().slice(-6),customer:f("s_customer")||"عميل نقدي",productId:p.id,qty:q,total:p.price*q,date:dateNow()});save();toast("تم تسجيل البيع وتحديث المخزون");return true});
+
+function deleteSale(id){const s=data.sales.find(x=>x.id==id);if(!s)return;if(confirm("حذف الفاتورة وإرجاع الكمية للمخزون؟")){const p=product(s.productId);if(p)p.qty+=s.qty;data.sales=data.sales.filter(x=>x.id!=id);save();toast("تم حذف الفاتورة")}}
+
+document.getElementById("addPurchaseBtn").onclick=()=>openModal("تسجيل شراء",`<div class="formGrid"><div class="field"><label>المورد</label><input id="pu_supplier"></div><div class="field"><label>المنتج</label><select id="pu_product">${data.products.map(p=>`<option value="${p.id}">${p.name}</option>`).join("")}</select></div><div class="field"><label>الكمية</label><input id="pu_qty" type="number" min="1" value="1"></div><div class="field"><label>تكلفة الوحدة</label><input id="pu_cost" type="number"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">حفظ الشراء</button></div>`,()=>{const p=product(+f("pu_product")),q=+f("pu_qty"),c=+f("pu_cost")||p.cost;if(!p||q<1)return alert("بيانات غير صحيحة");p.qty+=q;p.cost=c;data.purchases.push({id:Date.now().toString().slice(-6),supplier:f("pu_supplier")||"مورد غير محدد",productId:p.id,qty:q,total:c*q,date:dateNow()});save();toast("تمت إضافة الكمية للمخزون");return true});
+function deletePurchase(id){if(confirm("حذف عملية الشراء؟")){data.purchases=data.purchases.filter(x=>x.id!=id);save();toast("تم الحذف")}}
+
+document.getElementById("addCustomerBtn").onclick=()=>openModal("إضافة عميل",`<div class="formGrid"><div class="field"><label>الاسم</label><input id="c_name"></div><div class="field"><label>الهاتف</label><input id="c_phone"></div><div class="field"><label>الدين</label><input id="c_debt" type="number" value="0"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">حفظ</button></div>`,()=>{const n=f("c_name");if(!n)return alert("أدخل اسم العميل");data.customers.push({id:Date.now(),name:n,phone:f("c_phone"),debt:+f("c_debt")||0});save();toast("تمت إضافة العميل");return true});
+function editCustomer(id){const c=data.customers.find(x=>x.id===id);openModal("تعديل العميل",`<div class="formGrid"><div class="field"><label>الاسم</label><input id="c_name" value="${c.name}"></div><div class="field"><label>الهاتف</label><input id="c_phone" value="${c.phone||""}"></div><div class="field"><label>الدين</label><input id="c_debt" type="number" value="${c.debt}"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">حفظ</button></div>`,()=>{c.name=f("c_name");c.phone=f("c_phone");c.debt=+f("c_debt")||0;save();toast("تم التحديث");return true})}
+function deleteCustomer(id){if(confirm("حذف العميل؟")){data.customers=data.customers.filter(x=>x.id!==id);save();toast("تم حذف العميل")}}
+
+document.getElementById("addSupplierBtn").onclick=()=>openModal("إضافة مورد",`<div class="formGrid"><div class="field"><label>اسم المورد</label><input id="v_name"></div><div class="field"><label>الهاتف</label><input id="v_phone"></div><div class="field"><label>المستحقات</label><input id="v_debt" type="number" value="0"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">حفظ</button></div>`,()=>{const n=f("v_name");if(!n)return alert("أدخل اسم المورد");data.suppliers.push({id:Date.now(),name:n,phone:f("v_phone"),debt:+f("v_debt")||0});save();toast("تمت إضافة المورد");return true});
+function editSupplier(id){const s=data.suppliers.find(x=>x.id===id);openModal("تعديل المورد",`<div class="formGrid"><div class="field"><label>اسم المورد</label><input id="v_name" value="${s.name}"></div><div class="field"><label>الهاتف</label><input id="v_phone" value="${s.phone||""}"></div><div class="field"><label>المستحقات</label><input id="v_debt" type="number" value="${s.debt}"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">حفظ</button></div>`,()=>{s.name=f("v_name");s.phone=f("v_phone");s.debt=+f("v_debt")||0;save();toast("تم التحديث");return true})}
+function deleteSupplier(id){if(confirm("حذف المورد؟")){data.suppliers=data.suppliers.filter(x=>x.id!==id);save();toast("تم حذف المورد")}}
+
+document.getElementById("addExpenseBtn").onclick=()=>openModal("إضافة مصروف",`<div class="formGrid"><div class="field"><label>النوع</label><input id="e_type" placeholder="نقل / كهرباء / إيجار"></div><div class="field"><label>الوصف</label><input id="e_desc"></div><div class="field"><label>المبلغ</label><input id="e_amount" type="number"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">حفظ</button></div>`,()=>{const a=+f("e_amount");if(!a)return alert("أدخل المبلغ");data.expenses.push({id:Date.now(),type:f("e_type")||"عام",desc:f("e_desc")||"-",amount:a,date:dateNow()});save();toast("تم تسجيل المصروف");return true});
+function deleteExpense(id){if(confirm("حذف المصروف؟")){data.expenses=data.expenses.filter(x=>x.id!==id);save();toast("تم حذف المصروف")}}
+
+document.getElementById("stockAdjustBtn").onclick=()=>openModal("حركة مخزون",`<div class="formGrid"><div class="field"><label>المنتج</label><select id="a_product">${data.products.map(p=>`<option value="${p.id}">${p.name} (${p.qty})</option>`).join("")}</select></div><div class="field"><label>النوع</label><select id="a_type"><option value="in">إضافة كمية</option><option value="out">سحب كمية</option></select></div><div class="field"><label>الكمية</label><input id="a_qty" type="number" min="1" value="1"></div></div><div class="modalFoot"><button class="btn primary" id="modalSave">تنفيذ</button></div>`,()=>{const p=product(+f("a_product")),q=+f("a_qty");if(!p||q<1)return alert("بيانات غير صحيحة");if(f("a_type")==="out"&&p.qty<q)return alert("الكمية غير كافية");p.qty+=f("a_type")==="in"?q:-q;save();toast("تم تحديث المخزون");return true});
+function adjustStock(id){document.getElementById("stockAdjustBtn").click();setTimeout(()=>{const s=document.getElementById("a_product");if(s)s.value=id},30)}
+
+document.getElementById("productSearch").oninput=renderProducts;
+document.getElementById("productCategoryFilter").onchange=renderProducts;
+document.getElementById("salesSearch").oninput=renderSales;
+
+document.getElementById("saveSettings").onclick=()=>{data.settings={storeName:f("storeName"),currency:f("currency"),phone:f("storePhone"),email:f("storeEmail")};save();toast("تم حفظ الإعدادات")};
+document.getElementById("resetData").onclick=()=>{if(confirm("إعادة البيانات التجريبية؟")){data=clone(defaultData);save();toast("تمت إعادة البيانات")}};
+document.getElementById("clearData").onclick=()=>{if(confirm("سيتم حذف جميع المنتجات والمبيعات والمشتريات. هل أنت متأكد؟")){data={products:[],categories:[],sales:[],purchases:[],customers:[],suppliers:[],expenses:[],settings:{storeName:"متجري",currency:"دج",phone:"",email:""},scanHistory:[]};save();toast("تم مسح البيانات")}};
+document.getElementById("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="goods-manager-backup.json";a.click();URL.revokeObjectURL(a.href);toast("تم تجهيز النسخة الاحتياطية")};
+
+
+// QR Code للمنتجات
+function showProductQR(id){
+ const p=product(id);
+ if(!p)return;
+ const payload=`GOODS:${p.id}:${p.barcode}`;
+ openModal("رمز QR للمنتج",`
+   <div class="qrBox"><div id="qrTarget"></div></div>
+   <div class="qrInfo">يمكن مسح الرمز لقراءة بيانات المنتج.<br>الباركود: ${p.barcode} · السعر: ${money(p.price)}</div>
+   <div class="modalFoot">
+     <button class="btn primary" id="downloadQR">⬇️ حفظ QR</button>
+     <button class="btn light" onclick="document.getElementById('modal').classList.remove('show')">إغلاق</button>
+   </div>`,()=>{
+     return false;
+ });
+ const target=document.getElementById("qrTarget");
+ if(target && window.QRCode){
+   new QRCode(target,{text:payload,width:200,height:200,colorDark:"#111827",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.H});
+   setTimeout(()=>{
+     const b=document.getElementById("downloadQR");
+     if(b)b.onclick=()=>{
+       const img=target.querySelector("img");
+       const canvas=target.querySelector("canvas");
+       const url=img?img.src:(canvas?canvas.toDataURL("image/png"):null);
+       if(url){
+         const a=document.createElement("a");a.href=url;a.download="QR-"+p.barcode+".png";a.click();
+         toast("تم تجهيز رمز QR");
+       }
+     };
+   },150);
+ }
+}
+
+window.ACTIVATION_KEYS=new Set(["00KP-3K2B-R3O2-0GT2", "012N-VVMU-DA4L-ZMSV", "014L-714Y-Y9X7-LJM1", "016W-661I-1296-KXZ6", "02EH-9420-TPW0-LH69", "02XD-KJS9-YZ8B-7B0J", "02Y5-6IFC-3OYU-Y823", "03HC-AXYK-7WN1-U0XD", "08GZ-O0N4-2HH5-HW99", "090H-EDB3-N2YU-EM4W", "09FZ-T6VQ-8ONA-QNBR", "0AUI-GG5F-CHGK-0SXO", "0AXD-SCEO-5JFD-465L", "0GTA-TMKT-3Z9O-PKQE", "0IDI-K1BP-WQZE-0R3Y", "0KMA-4DN8-WHRJ-BF2V", "0KUS-FIE9-BVXV-7CYU", "0LOY-NMPZ-5RTF-10IA", "0M42-9WU4-PIUN-O37V", "0M8D-9PJB-HQST-H8LE", "0MKJ-RGAG-HXEE-HGLV", "0N9F-C9M6-1BNJ-E7XS", "0NEA-OAWE-9X23-M77A", "0OCU-DR98-B9D4-P60Q", "0X06-LMRR-5WEY-DDAV", "17GP-J30T-SMXM-6L4J", "1A47-KRRB-U7RD-XDBC", "1AFM-0ZIL-24RU-P3PN", "1BFX-78K2-5RGN-96P3", "1BVJ-D8E6-Z77N-X6CA", "1D83-Q1P7-9X57-MTLD", "1DTK-1555-W6NI-7GKB", "1ENY-XODB-N2XR-4PI9", "1FKP-OG6G-5F66-2EON", "1HNK-HYFD-VOJJ-273Q", "1HYO-PCDK-MPNK-3L7A", "1INL-A4N1-O2ZG-F5B1", "1KUN-KGSX-EUNU-5JY6", "1LEH-19NH-D8NG-ML52", "1NJ0-SW5I-JTYA-LDD9", "1ROW-5UIG-EHGK-XSXT", "1TJN-1YLY-3O7M-F8UW", "1X0J-EXBQ-77FT-L4B2", "1XBZ-95V7-NOIC-FB7Z", "1Y4J-3E2W-84KY-VQ4W", "1YTX-LJDJ-JE5X-50SM", "1ZVA-8C95-FCPL-9JD7", "23AI-JWGE-9YCC-SN5L", "25MB-0ADG-W9RH-5XQO", "2980-COXG-B8CJ-HT8F", "2A1Y-ZRL8-CJQR-XJRQ", "2AGW-MK3H-TNMU-GR75", "2CJ9-A0S8-OU6O-DNR7", "2DUO-U4UF-HW63-U65Q", "2EWR-K8WI-IXCR-UOGL", "2FY9-Z1SD-9ZWV-2WWZ", "2G6H-XE69-HDBT-ZBVS", "2GCH-TWCF-ZIF3-1M8B", "2GUV-C37G-CWWU-ETE8", "2HML-5HX9-2BXP-YHSM", "2I2S-I817-1EF2-FRGD", "2J5O-WFSV-78MZ-A9PV", "2JZ3-G6JG-WKU4-RILV", "2M4D-N2DV-LU5P-YKUF", "2MS8-5U6G-TBBW-L2XC", "2OWU-U43R-EH45-W3KG", "2QX8-PEDZ-GPHS-NUYB", "2QZJ-GPNE-5XC7-S145", "2RAZ-5533-7RXU-QHRW", "2RHE-8Q0O-FAPI-8SRL", "2SHV-W0VW-UJTF-9SKX", "2TJJ-V5PS-B83A-T7M1", "2TWI-CVN9-3X0A-FKGG", "2VDS-0W9O-1N2T-DUPH", "2VR1-6ARQ-M09E-OFHV", "2XOL-OQSK-TIBY-YQCJ", "2Z09-PI38-WPNI-0B87", "300T-0E24-J5LS-KGY6", "30CP-TO2E-OIDU-35UF", "30LG-86ZX-EZIY-BPAB", "30WS-NFL2-9DKS-HC8X", "3361-BZDB-UYB9-EW1M", "338P-ASMU-ZIV0-IXYY", "3577-OGGM-YIY4-AGGB", "35LG-FVJ6-5KW6-MYQL", "38BZ-G4UD-WJ6B-Q3SU", "3D63-EJ4D-MZ5Q-MPJC", "3DRX-XN60-I5BP-N7LO", "3DVW-JMF3-M4EX-0R9F", "3EZ2-YHBL-U0P5-1VBL", "3GHH-JDJS-N9I6-N482", "3HD8-B2AB-55WO-1W05", "3I0D-GV27-PDWV-J1A8", "3K39-RS6V-JAI2-BFRS", "3LC0-K6FQ-LHA2-17I8", "3O4T-AX15-3LLU-YB9U", "40GW-AEWC-FV0X-7IGM", "43I8-WKPB-FN9Q-NPBZ", "4687-NRBD-JIQG-NMK5", "48CT-XQU5-C2TJ-WARF", "48LS-JCOI-JMKO-PZD0", "48Q3-E1ER-3PZI-QVXT", "495I-G8L3-Z0MT-FZXM", "4GIC-J4IF-G63F-G2F8", "4K9S-L24U-J2CG-Z5G2", "4KHY-GPSA-55KA-LSHV", "4LT0-TPI6-EBWP-SRBC", "4MV1-KC1B-QHHZ-ANYY", "4O8I-C696-VMJ3-OMON", "4QMR-SR4P-OG1U-QRAM", "4RTF-HP7P-EZRE-GPZL", "4TEZ-8Y15-JBX6-EH2B", "4WAK-TN98-TSG1-1N9R", "4X0M-A254-P6UN-AIRN", "4X2Q-WI3J-P24T-6O95", "4ZM6-2P6J-MLB7-X7PV", "50V8-YZXO-XI2S-X8G1", "536I-7Z1O-33NH-DUDC", "56CL-H5CI-I1V1-NF7I", "56NE-CF5H-ALUZ-69W8", "57F9-V47P-Y4SL-LZKD", "585I-30U5-5NTP-OMAX", "5B66-FYJB-MY80-5FDM", "5DCV-28GJ-SYCC-XONT", "5EKA-5WTL-5ILY-GZDP", "5FD8-SCIA-SJGP-BUTC", "5J8F-PLKJ-X5UJ-Z603", "5KA4-RI3U-F1XZ-ASY4", "5LI9-3B6L-LARP-VNLY", "5N3D-9YEI-Q1JO-1OV9", "5Q96-PY6D-NC10-61WA", "5QNJ-IODM-V0S2-97DN", "5QRQ-6N36-W4MR-Y9YF", "5S6D-0MOT-AWTB-T7S8", "5TFL-OP83-8WDF-DSR4", "5WMM-2TO7-N82W-X2HJ", "5X46-N7BP-CWA7-PAZF", "5XPY-7819-ZU1J-JC32", "5Y2V-44OZ-N2UK-R7IG", "5Z4V-MT7I-LWXC-URIS", "5ZOQ-6V4L-FNNJ-GMIO", "60S0-2TH5-F3AV-L33I", "60UT-4846-C2NT-YJIR", "629B-W3XJ-C0GQ-L84D", "62UP-FWR4-PXQZ-KTXB", "633W-Q9NQ-CM9I-HJ5R", "65FC-5Y2N-3UM9-BNM6", "68CV-SMZW-A0M8-C88F", "68NA-6OY0-X8VH-EIFA", "69UV-ZIM3-4GF9-L8LW", "69W7-OLTU-0HTM-BKEW", "69Y0-W88O-0OKX-FS84", "6BL3-WRY0-QF44-NIZ3", "6BPA-7X0V-A2SX-MQW5", "6CWL-MBDU-0O1X-Y8RP", "6DNR-QCEW-RZAG-RWAU", "6FG0-XXHL-ZXHN-8M31", "6HNC-EX9J-HC6A-WIVC", "6IPP-QIUA-RU70-FJ28", "6IYY-534C-QGFE-5G5H", "6JVN-H2Y0-01XQ-Y0JS", "6JWE-20YM-H81H-NNVV", "6LHH-6VUG-1CMQ-EAQJ", "6LJP-PBSR-52M9-JDPV", "6N7K-HYIC-0Z56-YTGR", "6OA3-XS5N-91ZF-H5WS", "6OB6-M1HV-6LV2-9RY0", "6OV8-8TRP-SF68-QXK8", "6P8R-6KRA-TPIF-O5CD", "6QE4-CJ3K-TQTK-P2R9", "6SU4-8HW4-3I79-DR2Y", "6U61-LIGG-7P51-DB2Q", "6V04-2DLE-IRKY-CED1", "6VH8-QDAF-AG2R-KY1J", "6WCN-9RTY-37VX-HRKC", "6X7F-NA6Z-6BLV-MOQQ", "6XFG-UYEQ-HZ2B-WVMK", "6XRJ-6AW8-NR2R-89AP", "6Z6I-3NSD-FFV5-H3RY", "70OL-I4E3-FONJ-A4G3", "714O-5F9C-OES4-MAYC", "72OW-GFNK-YGG3-UHU2", "72RF-0IZO-3VW2-YTVK", "73CA-H8HU-2N53-J7FW", "73YF-9TQW-J62D-87K0", "755M-GKF1-93FJ-YRLE", "75G2-PE1Q-43RR-2IHL", "76VC-M0RG-Q1RO-6BYA", "772U-M938-ECXI-AZNM", "7973-TUF3-XAPW-I23G", "7ALJ-4P1H-OEPT-ZKWL", "7DE2-AFSC-Z8TU-Z7U4", "7E1L-Z9J5-Z7RL-SREX", "7G22-VVUD-LNHD-GWT7", "7I5V-Y9C8-MCBN-CS70", "7MEM-G2EB-KLH2-5XJF", "7N5K-RED6-XX1S-FF1O", "7OMN-09VQ-ZB5S-40ZG", "7R4W-IIE8-KVB3-H4GS", "7RLA-MN6K-2GH5-SLBU", "7SQ5-M2YP-KM8A-RSX8", "7VHB-C869-2FHA-QXWR", "7VV8-Z37G-892Q-P7VM", "7Y03-2H9D-TK2O-IHGP", "7Z9M-G9AY-DACK-WUUN", "7ZNE-1WB1-5A7V-ZYM1", "7ZZL-V94B-TB5K-QW41", "80C2-NFWJ-4BXX-1NUV", "85VU-3K3R-9VZW-Q03F", "8F4D-64P1-QOU4-6H8J", "8F8H-TJ4C-NS0J-QDTL", "8HAF-12XA-6V03-DA8U", "8I3O-95ZC-DH5W-PF8U", "8J6X-C80G-M597-SPGM", "8JYI-8M01-LD1N-EQBP", "8LMN-2Q8N-K415-XNQ3", "8OHC-1YGV-6Y3G-S2DN", "8OKD-JFDN-AYEC-LZPA", "8OWS-GN8W-6QT7-Q4MX", "8RX1-6TQO-RQ9G-EJ8E", "8UZK-APEF-CBKI-DS9B", "8VB0-EWQW-2TYR-NFQ9", "8VPT-VSXP-Z49N-LZTP", "8VY8-AGUA-C6MM-MS00", "8WLX-4XK3-ZLSI-T9XC", "8ZW1-X7WE-6RGC-T11N", "90O8-JUMS-EPOD-BF60", "91KR-9JPE-TFFC-DQVR", "91LQ-3S3T-JRWI-YG5W", "937L-XXK0-A3HU-GQGV", "93WO-ZV7F-P9Q3-U0XZ", "95VA-X3J7-DMOH-CSXI", "966V-9I4X-U3W0-7ZRN", "97RC-HFFE-UI5M-QSDW", "97VO-VC65-F4FF-L0C7", "989N-HR0F-MT7D-4HJF", "98PW-OVJR-QPS7-9M1G", "98W9-9YW9-STNS-FT5T", "99C2-0TDT-PBY6-SC19", "9A2F-C2ZC-XROS-IWE8", "9AXZ-IZY9-ZCGA-3PYP", "9CRA-X93K-IVQD-1FFS", "9D53-SCGP-WD3Q-D0QQ", "9GAT-0HGU-YIX3-J768", "9IAG-69AZ-2XV6-Q3UV", "9J7H-KCFI-6XXN-WS1F", "9JWN-IC4T-6DHR-7ONY", "9KB0-ZREM-EW3V-CRPZ", "9KN1-9ZJD-4NG9-JVTN", "9L01-NFE4-1300-Z0DK", "9M4O-0SNR-3490-UTVA", "9OLF-HYTX-UEZ9-23CL", "9OWW-T93S-ZWRN-NTRK", "9PK9-NVYW-6PFX-847T", "9R9V-C01W-FXVH-CFAZ", "9RK3-84WF-5LCY-XKFQ", "9U4G-HLZM-RJPU-2MFJ", "9VSN-G5D1-GMHU-G32H", "9ZIK-SRCV-8O1U-COB5", "9ZZ7-CFXC-WWFV-OEYR", "A1U6-FL52-CHUQ-5P5H", "A2WD-N0M7-V40R-FXYB", "A31P-IMZF-DMV0-G8H3", "A64G-RVS5-VSHR-8SK2", "A80Y-4EBD-G5SZ-4KMJ", "A92J-TPX9-D7RI-GJX5", "AB22-IO5Y-3UHE-KJKU", "ACQH-D4K7-5SZI-63H3", "ADMS-BRPF-QQHU-1AWL", "AJ6P-GJPH-7GOE-JAD2", "AKXM-S6IF-MLZH-ZT60", "AM4H-97H1-9N5W-J5I4", "AMY6-S715-6RFH-HUZZ", "APQJ-3ZWI-ZJZ3-2FTO", "AWFD-0EIR-X3VI-9MI1", "AWRV-DY1R-FHON-GF11", "AYDZ-EYQ5-79XZ-57X7", "B06V-BVI3-1BNA-I1YE", "B2BE-4PB3-KQX3-SMNP", "B2R3-OOAF-2QA4-M2KM", "B3PD-5XET-J1XH-QZ0N", "B3PO-83PY-80AO-WLBQ", "B7RQ-4R8A-VDE8-EWN2", "BBCH-06OY-0JBO-QBEG", "BBCP-T98D-GOVW-G77Y", "BBWJ-GZ1F-41ER-TIOT", "BEMM-0GLD-5YXO-1133", "BEU5-ZMQZ-IX1U-NGM8", "BF3K-6Y18-ASXM-HWBI", "BF5L-AHX1-TV6V-W4ZE", "BH19-HLV0-7UIT-UXH0", "BHQI-SZ02-3BIP-2G4N", "BILM-P8EN-TYD2-EHQC", "BK6F-Q24H-RHGB-7DY0", "BKXS-NV2E-F0SR-XB4M", "BL66-C63G-0LWL-7PQX", "BLSL-984P-K43D-6GSS", "BM28-0T90-VBVQ-2GJS", "BO3F-MXVS-3V75-G8BM", "BO82-LIJF-ZZHD-NBS1", "BPL0-ECWA-UART-E5LF", "BR2L-C5AM-BORH-XKUK", "BRD6-5A7J-QSHX-5O78", "BRT4-K6S4-G8E6-75C2", "BTOG-B4VD-VNVV-P4TO", "BWDO-Z9MV-MWTM-I1D0", "BWRH-W1U8-WPL4-D72Y", "BXM7-45K8-PMSB-YHBD", "BYHI-C0M1-NE9H-P64C", "BYZ4-7K9F-IXVT-INPG", "BZM9-B31Q-93VN-AN73", "C26F-XTNS-Q6NV-KPCN", "C472-EFMG-TTJK-FWEI", "C57F-LBDE-NQCU-2NUC", "C5VB-BVHZ-ZIGR-6KH4", "C6IU-6R3P-WTQR-UJAH", "C7FW-9GLR-36ZF-U4LY", "C810-HDUD-GM2G-02Z0", "C8GE-J4BV-6X1Y-L38R", "C8VH-T3TE-O7QE-ROMX", "C92R-YDWB-NJA0-GSBS", "CA8U-N5KK-JW6T-QM88", "CAP6-7TGA-4TYH-TQ79", "CBYX-0HT8-817J-4VIT", "CC7Z-M0GI-E9Z6-6XWA", "CCJG-8CZR-IZ02-WYUR", "CDKX-4GWJ-TIHV-O0DM", "CDRC-MW2Y-IGQI-TDKY", "CFSN-N3YF-2ALD-OGQX", "CG9F-L2Z0-NHRN-WWWX", "CH6K-T7DQ-2H8D-E6PV", "CHBY-R1NL-9BYR-IL6B", "CHLL-2TON-GF7L-8CXZ", "CK34-4Y5A-6UZU-OBZW", "CLER-LCPW-LL8E-55PR", "CLUM-USEL-R8RY-UHQP", "CNDF-6PHJ-2A2T-RQLU", "CQDK-IBRP-9OHZ-9LNC", "CR91-64L8-1M2J-P244", "CRXQ-DMNF-IYUQ-KO4E", "CSIJ-GRJ0-NSNC-XTZU", "CUY3-0CYB-IQ4K-SZB9", "CX1O-20WK-V3GA-L0RP", "CXJI-WXPL-X3TO-OY4R", "CXX3-1T7Y-F3J3-X2KI", "CY26-KAEJ-WDI8-NJPN", "CZ1N-VF9G-3MYM-ML1N", "D01X-YF9Y-CCDJ-A5SA", "D0LB-KBJK-DWWE-ZF46", "D0YE-O900-192P-SDWA", "D1T8-ET9P-FWFW-CZMS", "D209-3S0X-UIPA-66UL", "D25R-7Y29-IAZO-7LHA", "D39Z-SJHO-WZVE-PXGN", "D6TA-VWV1-B8PH-3GDY", "D92E-3F70-BJM2-GEM5", "DAQZ-6MDX-179S-5895", "DED8-U6D5-T9YX-UCNL", "DFN4-NGNJ-FOCA-08AF", "DFTH-BCDI-TJVT-Y7Y3", "DHYW-0FSC-X3U3-MUBK", "DIN9-W96S-AYEF-JL02", "DJ90-T4M7-8DBT-FJ8Y", "DJBR-6XSL-FM96-9FHY", "DNJD-L7FW-BXIF-9B7R", "DRF2-X9ED-MZF9-6XR2", "DSK8-CZKV-SOT6-GCWM", "DX21-FL2O-BOAI-Q53Q", "DXVJ-310N-X4ZD-07QL", "DYXR-JKYN-Z1UA-6GLX", "E2J3-EYEJ-4NOO-HQF9", "E3AI-HX37-RDAM-PH61", "E3SV-BMQH-S9P2-3XSY", "E5NA-JHOG-F9NG-7264", "E7FU-U8Z5-TVRX-KS9I", "E7QP-2TOG-GM60-P5N4", "E7SO-JS8T-EJ3W-5FPZ", "E8GA-YSTY-BUW6-DVFO", "EAXI-Z7FI-X33Z-CHF1", "EBN1-Y10H-NZZW-E2R8", "ED9F-DC04-F4U7-OFPO", "EE52-F0EL-RUFC-14ZF", "EE5L-P0ON-WM76-HNA0", "EE6T-VJPF-43CG-1773", "EES4-P28D-RNWM-G2Y6", "EEZL-5FS9-X3AP-IVEK", "EFHA-9J4E-ZA06-BB4X", "EHVR-06I5-5PGV-4YJW", "EK2E-EO7Y-FVVH-D4SS", "EKJO-8N2Q-2T9B-LLWY", "ENJM-GKBD-OOZE-UVHZ", "EOKI-2DWU-KOKW-AXPQ", "ESFG-YBZB-ENAC-CZFQ", "ET0A-2HQE-6B8X-WVI4", "ETPD-9DT5-C21O-ALDI", "ETPE-AZSF-2Q9X-G3E0", "EX3E-OWHT-CWEY-V257", "EYFK-P08R-KU5O-30YG", "EYND-5PPL-UAGF-IQ4H", "F0W6-SVVC-5MN4-U4AA", "F15F-EGDN-YGN6-2OA7", "F1CZ-XSP9-5FOR-L762", "F1LH-RZM1-F6AU-2KMB", "F2EG-2LG3-G4WL-YYY6", "F36X-IY4A-UOAD-6FXE", "F37J-11EC-VNTL-B6NX", "F3W6-N3UG-BRPJ-2LZR", "F4G7-NVW1-UORL-7CTL", "F86M-7SYJ-F4VQ-Q51G", "F8PL-0GHM-J54M-8BD5", "F8T8-ZRLI-AU66-2GLR", "F9VL-ICAZ-AG1J-1TWV", "FADA-HWIB-Z41J-9AXO", "FGYG-4X1L-1LBO-ZW58", "FHH1-B8V7-I6ST-GL1Y", "FI8L-8HCT-4O17-3EFX", "FIN2-GEOZ-Z4OK-ODWH", "FJ98-XS05-IZXA-G6J9", "FJVZ-LLNA-CBTO-4Z3B", "FKG1-AUAB-1IO6-KUJ5", "FLEH-UD3O-5F17-MQJL", "FN8C-9BPY-19C2-DQAB", "FPES-2S6C-QT3U-OJRF", "FQBE-I1WG-7ZE7-X4T0", "FQPS-I3SN-8MFZ-K0XW", "FR5R-IKXB-LEE9-SZIB", "FRD2-INTI-3UW0-9O1R", "FS5Y-EMG8-Q86T-45K8", "FUEA-PAG5-V6VD-VKDO", "FWYY-EPF8-ISEH-K7B1", "FXKH-3OBK-DPMW-JCJF", "FXW8-RMPL-FHJI-QKBS", "FY6O-3FET-3QXP-43IV", "FYYV-QGOE-T6BA-0VNS", "FZTU-OPWS-3A69-8BCB", "G0LT-PL34-3R9T-MZ37", "G0TD-DSCY-PD6X-MUX6", "G1FR-O54I-LB6U-SBCP", "G1NK-GAKH-H1UV-JOLF", "G26H-MEKE-QK56-WMK1", "G3AH-R8B8-X66M-MJZ5", "G50K-OWCT-16VZ-1X5H", "G5JD-KENM-RU2N-X7Z4", "G6D2-TMUI-E04H-3M76", "G8GH-DJAN-B5W7-A44G", "G9SU-JRMH-EO3W-DGK8", "GB9I-ROPF-RPT2-LKF4", "GCL0-RLTK-BQTJ-R5JB", "GFRS-U6DV-S1SP-IQ1S", "GG2A-JTAS-FX66-L65A", "GJMQ-RAGW-K3DH-E27C", "GL94-AIQW-KXNN-8UWX", "GOE3-2TXX-UGFM-SXR1", "GPOL-0TXE-6I47-YI3Q", "GUQ4-82YV-0FH6-TNOQ", "GVC0-LPBQ-8GRT-A200", "GW82-3Y04-0H74-T7UZ", "GWPI-WER8-7VYM-1H1V", "GY91-8MW7-9Q03-4QKB", "GYAC-2GXX-2YD9-BN2Q", "GYPD-W7KG-4EXN-JONM", "H0AJ-0NY0-3DGU-SXQI", "H3BW-6FBF-2FE5-3IQT", "H3G4-GI4J-MVBQ-GR8R", "H3V0-O5WV-ML53-BN2Y", "H4TK-NS2J-31SZ-59BS", "H505-E3PY-FVY1-PRDN", "H5C6-K1AD-YAE2-DS8D", "H6P0-Z4KR-K2M3-U601", "H77I-W52I-EA6H-V5CB", "H7FQ-91O2-KSYQ-YUX4", "H8M8-GII6-Z22G-PRHB", "HBM0-L1OQ-DM47-O25F", "HBUT-TR6H-HCIK-KI18", "HCV6-J0SK-JT3G-RGS5", "HD04-WX3I-GP0T-DUUZ", "HHW9-MP2L-0PM1-NLH1", "HJJ9-W2JB-1O7F-2K20", "HJQ6-CKAW-8RE1-WO7X", "HLKF-20KU-63EY-3WFG", "HN9X-7F5M-RUOU-RJJU", "HO8B-JD6E-WKE8-MNOB", "HOPB-AB4K-0SX5-IIGD", "HQY9-XJ2V-WSHX-OBHV", "HSAH-0VS7-IRJ1-KOKW", "HSL6-D25E-VBY9-Z1ET", "HUYA-PCM1-4CRI-49J1", "HX8Z-3M7P-JH28-CZD3", "HY59-LKIP-TIL4-0LHZ", "HYTD-1WCW-T1E7-1E8X", "HZ4F-ZZN1-M091-VOSV", "HZBF-JYWY-X9IN-BS7P", "I0KQ-DZX0-OPZE-3836", "I1QN-AZX0-TFGL-O5DW", "I1XT-RQKL-LGZK-SQKW", "I30U-NPW0-YVUX-9P86", "I3M7-LQTC-7FDD-6TZ2", "I60L-D3PT-F39K-LFAY", "I8XM-TAWF-BOZC-93YD", "I9EN-RZ7Z-THCI-BF8G", "IBC9-P8KB-ID0Z-28ZX", "IBQ9-1Z83-VGJG-4PEH", "IBW2-RTTV-UCHU-YCRH", "ID1M-MQH6-0VIP-H7L6", "IDXJ-324X-82KR-VZS7", "IEUF-ZYB8-BC4X-OWIO", "IFB2-QMXC-6W20-DL58", "IFQO-RP1R-BYFX-E5SP", "IHCM-UEVG-1IYO-6JWD", "IHEF-SX63-XI04-SRSU", "IIQY-AN95-KHYD-NRKG", "IJK4-INKZ-3V9P-MY4Z", "IKPL-O6X4-EK6V-IZJK", "ILZN-F8JF-FIA4-FE8H", "IM03-GLTO-76SM-WFP8", "IN3I-Z69Z-IVTX-DLO0", "IO6X-JBJ3-J0VI-4HC5", "IOKZ-UEEA-89Z8-N1LU", "IP4D-D8XS-7P0C-0TO5", "IPRR-R2X6-8GMG-97ND", "IQ17-IX1O-4INH-FOFX", "IQ36-SV6Y-ANNT-3K5Z", "IS5M-TNAX-EXVQ-LSST", "IVM2-3VJ7-71T4-R087", "IVZQ-OK92-XE0M-YVS9", "IXU2-73T4-5V6J-U6F0", "IYXJ-L7SS-FTR8-TRIH", "IYZL-5UGR-R3H3-J8X0", "IZ0N-DEWA-IYAH-F0WR", "J0SX-KYS4-LH4S-K3WU", "J37M-XTRY-2NR9-672M", "J3CV-VKLO-ZK02-0XPG", "J66N-OW9S-P9LV-HEFU", "J6FR-LVHY-2W5A-BHOB", "J6IQ-AIX6-T9P0-VHNS", "J7EY-IC7A-OERV-X4YS", "J8E9-ZN83-A1PU-95MJ", "J8FA-IKUF-SP2R-G7QL", "JAM7-3EBA-8L80-ALMC", "JBPF-1RCC-VEWI-MM2P", "JBY7-JKIZ-15TV-CGY8", "JDHX-3MUL-D14F-RPNV", "JDXW-3WTG-ZFE4-O809", "JE2I-ZRK7-W813-K4YV", "JFU8-ILSA-HLER-D4RQ", "JI9K-14P7-C3KH-W710", "JKYO-HIMB-NN89-SJIC", "JM3I-4AK1-RBXB-86LW", "JOBY-MU0I-KIN4-JVMM", "JOOV-KI4E-QF09-DT8O", "JP99-A049-PLHG-KYWV", "JQ2G-HGMK-4P2M-VWHT", "JQ2X-OIDS-HYZ1-FM4A", "JQCV-C2FC-QMTL-2FUP", "JRJ9-MS1M-75MO-07II", "JU4G-11KX-2YUY-B48J", "JUQK-ATWF-2J4I-ZBVV", "JW32-30C6-DA0Q-9W8I", "K0U7-9OYC-Y30F-ZIFT", "K5K8-Q0CT-SC6F-HGN7", "K5LA-F5UX-DM46-BQWK", "K6M1-3MFX-XBUA-JDNJ", "KA4U-Z7JJ-KG3Q-1RR4", "KA9E-5R8P-Q4DG-4QXN", "KAU2-1SP8-JDV8-M5L3", "KAX6-P9CL-7WGS-W7DH", "KC1O-ALGR-064J-F5RV", "KCQ5-CV03-P9WJ-SMSD", "KCRK-E4YA-WMRG-984S", "KDB6-DHVT-YT03-KG59", "KDM0-QUP0-D3JL-1SJU", "KEAV-G973-ELGR-ZYLT", "KESL-BVBM-1BD6-A7D7", "KGJB-K2CM-Y9C6-GROC", "KH7B-Z3MU-TGK5-THZ6", "KIAA-7KVU-KJTA-WTEN", "KIGF-TFZF-KWI0-L0UB", "KKBN-MOOC-LMX6-AOE5", "KKHN-1MB4-7GI9-ZT4M", "KLDU-5JT7-F7T0-QV01", "KNHU-7CRW-A8AS-CPER", "KO37-VZZK-DYZF-P34M", "KP1A-EQ00-J0LM-4CHG", "KU9B-TYTU-472T-6X60", "KU9L-6F2A-MX7G-7QU3", "KU9X-77FZ-AWEV-BNJ1", "KV6W-LMAO-E3LI-45XN", "KVT3-FBF5-BRNB-19X5", "KX7G-F8IF-U3NH-T5NI", "KXBY-45YP-LCG4-MSCC", "L1BW-8DZB-YHV4-ZGNA", "L1IL-V0PQ-YQ6U-APP0", "L3CS-AS52-9BB7-8GE6", "L4JL-5ANU-D1P1-D3Q7", "L67D-B3HY-L6XR-75GE", "L6I2-OULG-ZKOU-C48G", "L7CK-296V-XQDU-WHNH", "L7M5-5C2H-PPL8-2296", "L83F-WREW-EAVY-0ZAT", "L9XP-DTXG-549O-M3EB", "LBPV-6U0J-8Z6S-G22E", "LCMZ-QZCQ-JJ4D-R07F", "LCX1-OEOU-I4IU-DX8L", "LD34-55Q5-81NM-EODY", "LESL-P4E7-9XGG-TGIP", "LHAW-100G-P9L0-GK6O", "LHM0-DZI6-IWPI-OKBR", "LI3K-0D1B-W4PM-RVXR", "LIPT-6LV6-30X1-P1GJ", "LIVE-YRE2-RTIB-NU53", "LJAJ-RH02-I610-NHB7", "LL9Y-M643-RNCA-KZ4U", "LO6L-YTVD-1PSO-2EDO", "LOWO-PFPH-8ZHW-A3HA", "LP28-UH5E-UQTL-MHM7", "LQ9K-JZ3A-EL74-6DGM", "LRHO-E5RQ-RM6K-C7ET", "LWT6-50H0-GUXC-G2DI", "LXY0-5PXG-SQH0-CKSV", "LY6U-MHJ0-TU8Z-FWNZ", "LYKP-BI3O-62OC-FI80", "M271-IZ9K-74DQ-F8JT", "M4JC-MWJ3-EQKM-EE5F", "M4V0-I7NX-JRMQ-5OG4", "M5ZZ-L906-Y77G-ZP77", "M6FM-J6GD-L3XI-X46C", "M6KU-YAQ4-NRWU-H1A7", "M7AB-52R2-8ZRP-ZASE", "M7JD-N0O5-A5J8-EA6A", "MBL8-EU81-2FQ2-9NQD", "MD4S-GWWA-MMR2-SIED", "MDCO-WLKG-LVZ3-J1S6", "MDZ1-SH6T-FU3H-9H8Y", "MGHT-24R8-0R4A-GGUE", "MMK5-UHBS-5ULX-JZVW", "MMKW-QH1W-E4U4-65EM", "MNHC-T0TH-PR5K-B6SF", "MPOO-CK76-VCUU-D5Z4", "MTZD-BYA8-2OC1-VCI8", "MUMO-S1KE-O59O-HRTP", "MXH6-ZP8Q-UYY8-88ID", "MXVM-4DGK-J34S-098K", "N1GK-BFV9-RE9P-OPZG", "N1JH-XJ9I-EPI2-B3IS", "N22U-TPHF-ZZ76-ZTTV", "N2AQ-J7I7-MT00-1CCA", "N2O5-OOQE-9J0J-XK2I", "N42K-PHF6-GORV-CUO4", "N55P-VT5F-0JB1-NAAZ", "N9II-05NS-HL5T-CVWZ", "N9RC-J5X9-4U6K-S1SA", "NB8C-H5RJ-8VOO-WMRN", "NJGA-1UPR-YXHJ-4D4V", "NK0I-2ZAE-VZIF-Q78P", "NKSC-JL3J-9BX9-IRK3", "NNCW-Z7FX-0F5Y-XSDE", "NPON-4Y32-URGR-LW3O", "NQDM-06YY-573M-EF81", "NRDC-0GP7-8UHP-8KU1", "NUB3-L2BX-VXJ3-1AYV", "NUSF-EKQB-89TI-JUG7", "NW1E-ZHMP-V2ZK-DQ7I", "NW7H-F1QZ-JJ3Y-5QJX", "NWUO-I1HW-LCZF-9XHL", "NXI6-YNTA-8EF6-VWJ7", "NXN1-SK0L-MP7U-I4JY", "O02N-DSBH-R1AE-O8L9", "O10K-KJBI-37XV-TZDF", "O11I-51ZU-X5PJ-5K4C", "O1UX-AEZ5-ICO7-58CL", "O30P-N9T6-DVR5-GUFG", "O6PW-C1J1-ZUUY-GJIC", "O8T7-96PH-V3OU-EUQ5", "OACE-2SDD-8Z00-08OU", "OBLL-U3S9-HKJS-E4MM", "OCGU-C46C-070P-TEIJ", "OCK6-TUKU-MLJR-G7RI", "ODM5-PXTA-K1D5-0MM8", "OE5W-O7N7-JN28-IUOJ", "OFMQ-0KPV-N9CU-HSGW", "OG93-YOVP-4I1H-T70D", "OKXI-PJAU-BAJP-AK40", "OLL3-O2N3-B8A8-4K11", "OM7O-C565-OXJS-21ML", "OOZK-9ZCX-NDOB-YFT3", "ORFZ-A7XW-W06X-625H", "OVOG-WV9Q-8OBS-04CK", "P08I-G3LQ-QTE0-TI5J", "P0R3-2JSW-0N4T-RO27", "P118-LWH3-69O4-2GWV", "P13A-SZCR-V0ZL-7UG5", "P2E4-H510-FUTR-EU5H", "P2R5-DKWL-8P32-PJ8L", "P4AK-NJJ6-A99L-8VQZ", "P5V5-P4W8-U7IP-2LVP", "P6QN-Y1QN-UAEH-BIUW", "P8GJ-T8BU-JW0Y-IZ8E", "P906-L58E-TUFP-80KN", "P9QW-BCBY-JATG-EUQB", "PAUY-C8E0-3MW4-T00N", "PB7Q-VWQN-KF6A-ELTN", "PD2S-H68X-N0F8-T2BG", "PEGP-9OHQ-435O-R6LI", "PEM9-FTGT-I54F-U5IW", "PG6T-QFCF-EJJE-0F74", "PI1Y-OGWH-U0RO-U4QF", "PIOO-K8QS-P6G0-9EA0", "PL7D-K19F-O1EB-NTJF", "PLN9-Z4Q0-7SHY-3BZG", "PM8Y-WU49-1EDA-BW03", "PMLD-LRTB-J97W-MYEH", "PODJ-31C8-6095-XPAM", "PRFX-E1XP-65BD-56G0", "PRVP-6GG7-ANWC-SO56", "PS9S-OBTQ-W0TT-30AT", "PSP6-ZYO5-0FP3-VVS6", "PTY7-413R-GKU3-IKV9", "PW42-OXCC-R5OC-XY59", "PZA5-A8GS-VBLL-FGKB", "PZNH-OKFV-ZU2G-TONU", "Q084-HKI5-2U4D-YOFV", "Q1D1-QNOL-Y687-PLIK", "Q4F3-I3J0-92WB-3OS4", "Q5FA-OOBL-55ZY-BL22", "Q802-10LL-TTX3-RGSB", "Q9HK-580H-KXY3-5Y99", "QBHV-HTZ3-M8DK-CR2Z", "QBLV-W41U-1VMG-FH3Q", "QDT6-Y8F5-ITPB-0ST6", "QGDT-Y92E-2RRV-BYNA", "QGIF-RBS2-QPU6-MLDE", "QHCG-CASB-BMEO-DNNG", "QI76-S309-MDAH-ASD4", "QL5U-2VSR-FABN-ZZLH", "QOKU-04BL-WXKK-X4C9", "QQF4-XXFB-GFKY-G07H", "QR57-H49C-2IWH-UWSF", "QRC2-4JUK-Q4PJ-DAYP", "QRC5-I2O6-7R57-UWAY", "QSFC-V5JT-YUGX-FVIV", "QUBR-0KWC-NHJC-6NEC", "QUNY-AK8O-FZWP-D40V", "QVNN-YC4Y-VMP6-W0X9", "QWWI-CUYU-RK3M-C2K9", "QXV9-F4EW-VE3V-8NGO", "QZ3D-1PI1-PSFL-RXVA", "R13Q-L36V-2XIB-5CEJ", "R6W2-GSG3-WHTC-N37Z", "R7PD-NZ1K-K54R-94GX", "R7XF-WARE-ZJZA-KLYB", "R91M-5JB0-08I9-3499", "RAJG-FP1K-YLR0-KLPC", "RAKU-ESMY-5J0W-HSY9", "RBE9-JWT9-OLA1-D5HZ", "RC2K-EHQQ-HHRA-EN1Y", "RCPH-I33E-XRTC-IZA8", "RE5I-VYSZ-CJYH-05DW", "RESR-YYR2-CUSC-QRUN", "RHBH-188J-1VYE-ZCTV", "RIAV-5TSO-89OJ-9NH3", "RIS3-7HJT-FUXI-9K14", "RJGT-RC08-0LM4-CFCH", "RJRA-FXYA-M7X4-FJZ5", "RJWM-N63B-AGDV-XY05", "RMK6-QBUK-ZKWS-V2QT", "RML5-U0HQ-ZCJC-FNMT", "RN6M-8E7J-C20I-L741", "RN84-PVK1-IL5S-D2AO", "RPTN-SCGH-EFFO-G9BH", "RPVF-BGU2-FFYN-UK9B", "RQRS-TE9E-15LN-1ZT1", "RRG6-7R75-SNU5-WX53", "RSTE-KZ9D-WCEL-8YI6", "RT24-1GGU-C8Z9-ORBT", "RT2C-E8EA-YJR0-E27T", "RVP8-RGVR-ZNMD-D1G3", "RWD2-O9FI-0QVA-GN70", "RXRQ-4QWH-1WVG-WKTP", "RY8J-U8MA-904X-E0WZ", "S31W-AYVD-G6VZ-1Q19", "S4FI-O5PB-KM1T-JCW5", "S4O9-3JRA-B7P8-GJIO", "S4XD-T32E-TQV3-P8M9", "S5GQ-P2OI-LB2E-VGP7", "S5QF-53FN-1JT1-WFD4", "S6YD-B0A6-X9D8-10QR", "SCSM-0KCV-NWIX-HLBW", "SD6C-GGL2-H29O-Q69A", "SDOS-02JE-SGBS-L2MJ", "SFDJ-4IYC-YMRV-RL9R", "SFVA-PM8C-X7YE-G0RG", "SJL3-3AEQ-LWY8-GFOP", "SK5R-DBYZ-G3AL-HDZ8", "SNWZ-JVQG-2QAC-JH6J", "SRG8-JQG4-AXEN-P15W", "SRGE-34P4-Z40E-1C14", "STNH-C1QC-RG99-AMRA", "SW5V-5SMP-EPQ1-8HY4", "SYBH-0VOE-8L7S-UVFE", "T11E-CG3G-3UPT-4CQQ", "T1PG-NYE8-XS2A-0VLM", "T3GL-DO16-V5EZ-S4ZR", "T4W5-TOSZ-33FT-TRNF", "T5R3-ZM3O-8ED6-9XEO", "T8XC-14YB-F7GS-G7GL", "TBNU-HA39-ZXYL-8NSJ", "TC2B-HNP4-4L5Q-MZ2S", "TCN7-UF6Y-7XLI-8IWF", "TDNF-9NKH-UXME-5N7M", "TEX8-7RMO-RXBN-DG1J", "TFM8-PF28-P33B-WB5F", "THEY-YX9D-CJQD-OPLN", "TI85-GJDM-RFKX-5U93", "TICC-3GXU-4PHN-OH7K", "TK0U-J7IU-NUR6-1F5X", "TKVJ-ZQ1M-4NW6-PJOR", "TL09-MJSE-C8LR-YMFI", "TRDQ-4PWY-QRML-L92V", "TSAI-XPCM-G9V9-NWI6", "TSRH-DYK1-OSCD-WSYO", "TUYY-AWET-3DJS-NPH5", "TVF5-SBPO-9EUJ-2Q5J", "TWUD-UGSV-UDX1-M78B", "TWZ4-A0K5-WQL7-EBGG", "TX83-JGAU-DAI5-N9WB", "TXYP-EWFL-PT6G-EAG8", "U025-ETNC-STED-4RG2", "U0EJ-E56N-OIIR-ANPI", "U0FQ-0FGR-1BK5-9S97", "U1K1-K597-S2P1-HTQ6", "U4QJ-TZXA-B97E-I0TO", "U5JZ-39IN-T0CZ-INDU", "U7QR-DU21-FG2V-BS9W", "U84E-RKP9-NQFE-6KKJ", "U8X1-75JX-B0F1-ULKG", "U9Y2-ZQXG-ZFE8-1F3V", "UA5M-WDHU-ZWGW-6BNA", "UAV5-XGBN-OHTE-57RF", "UBCQ-I2ZP-6N5X-MUAR", "UCAO-AWRS-4CWE-VTYB", "UF27-IP80-3O7W-QO64", "UFD1-IJI9-82EP-O9EL", "UI3Q-QIYY-CEN4-IH8M", "UIFM-KFQD-PGMR-K9NN", "UJTI-9D6Q-DQ1Z-M45C", "UKDP-CSMO-AI2K-F8AQ", "UMR5-N6EE-U9RH-KH96", "UMXC-REDM-DOOI-16JX", "UNIW-8KL8-6ZH4-ZM8P", "UNLH-L39B-NAHM-41YW", "UOXE-S2UT-JU0Y-6PPZ", "UP3K-G6GV-LGQE-WZS2", "UTNU-AW4A-I2C5-US50", "UU0N-W2BR-BBZJ-FP6M", "UUPY-G0FS-GFU9-DMXJ", "UWH5-MDW8-48SC-LX4Z", "UWW1-BEFA-N91V-6K0D", "UZNZ-RVGZ-3XMA-AVPA", "V1KJ-CYO9-P613-PBXV", "V1PB-1I0J-NEWV-1VWW", "V5QU-OT1J-ZNDB-JY08", "V60I-0IPL-JJHU-9GCW", "V76P-F2UL-SQRK-FLNY", "V857-CZWO-RS8I-KTKD", "VA0Q-FJIN-FFQ2-LLOS", "VAAP-2ZID-8CT6-9F5O", "VBE5-E4GD-JTX6-JBS5", "VBGQ-MZKS-KEY7-B93G", "VCKD-1TA8-V0RF-47IR", "VE19-DGL7-P882-3N1Z", "VGCT-Q0WA-HLYW-YQW1", "VGDD-24PT-V6GN-U3HE", "VIPA-1F9T-23EU-CAIW", "VIYC-HXNF-JVHB-3CQN", "VK1C-U5BO-IZNL-ZCME", "VK7F-FAH0-D46J-71V0", "VKY4-QSEH-0T8K-K85O", "VLAU-5YCC-ZNY5-1SZZ", "VLIY-S1J0-HHW7-HMQL", "VM1Y-POA9-CRWW-K8S2", "VMUA-5QUX-FSTP-EWK6", "VNV0-YN17-H434-GG0I", "VQFF-Z949-G4M9-MZK0", "VR9U-ZTLZ-QVFL-F86Y", "VS6S-6WVB-PXJA-7T88", "VUCC-N4AB-MU67-6T6N", "VVE5-H96T-XHC6-Q5Q6", "VXMZ-85V7-XX8T-28SV", "VYNB-QFL3-S16D-AXIJ", "VYSG-E4XT-XGIS-OG4E", "VZ0H-YI21-CY13-O8UE", "VZMD-84W3-VZY5-K9L2", "W2S4-E4ST-8DWU-MDCK", "W2ZE-264O-UFBT-11JM", "W59M-P5MG-OEAQ-LER5", "W6I3-GX6F-9H1C-WNYC", "W98F-PZVR-JVG5-SEQQ", "WASR-4AR1-V8Y4-4KTZ", "WBNU-BLKJ-TV7Y-USZI", "WD2S-G39X-LYDZ-EBDL", "WDB5-04NJ-VFTN-MME7", "WDWW-ZWZN-8P10-HLA5", "WF0V-XX71-W0ZQ-8XI2", "WFGG-WT2E-9IGO-EXFT", "WFY2-BXTL-GEVC-BBS9", "WGZ3-6A06-063S-Y8F1", "WHCB-YKEX-6X7M-OLE3", "WKAB-GOXB-4T45-NCFJ", "WKXQ-RE9Q-075P-U9O2", "WKYW-3SVR-7XBL-7RRF", "WN6H-K44E-DU27-KE4B", "WN8E-9SYN-R3H7-ZL77", "WPDT-MHEL-8WM5-3GUA", "WR9J-JSSA-K33E-CW2S", "WRMO-769O-E555-JYNT", "WUET-KO1S-I2L8-CU5R", "WUW6-40LC-O3MN-90PM", "WVWP-I114-DJE3-A6C9", "WW76-TF9B-ND4P-UF8C", "WWWP-J94B-BLTN-53UK", "WYZ2-KPSS-PS6B-BEWB", "WZBV-JTDD-WS10-S3ZM", "X0PJ-FR8J-VF2Y-2EN9", "X1E7-ZP3M-AVS8-LSRY", "X1TF-CXSJ-8JRS-1AK8", "X2LG-9T8J-MLKU-IOIH", "X8SY-Q2LV-6SG4-M9TN", "X8ZV-5NMF-FVGC-7HWI", "X903-70MX-TAWI-IJSN", "XB9P-BY58-51TX-18BM", "XCB2-6RSZ-3L5P-QIIA", "XCC1-4Q6F-QYPH-W497", "XD7I-DQMQ-SICG-8VRN", "XEI7-DZZM-31XK-D0IR", "XGF4-G2VF-DDPC-OQID", "XHR2-CW1U-01HY-RYJT", "XKQP-N60Y-RQRT-5HLI", "XKRZ-XG8C-UDPW-LAEY", "XMER-XU86-LA31-1UT1", "XN1G-GMWS-3YKJ-GVNV", "XO7G-00KC-4840-BT19", "XPFN-7D6N-QFP6-N01N", "XQ7U-JL56-GPGT-MWRN", "XREH-2O43-E3KM-75B7", "XSN6-V7SK-DL0O-TVSY", "XU5O-RQ4J-ALUF-AR7G", "XUZQ-WZIP-4Z1I-O0EL", "XW8P-77KN-NXGE-6XUI", "XWD8-5KGM-6FMN-IEC4", "Y0GZ-9O0I-B12W-PC03", "Y3E1-SK3Y-PJ51-QKK7", "Y3WG-SIT8-ZDTU-4Q31", "Y6H8-M4SE-ARVH-9ZY4", "Y7FL-2J96-GDGV-FG9S", "Y8OQ-O2K2-LKVU-1WHS", "Y8VS-JXBV-38W1-7Y3Q", "YAJJ-QHSD-SH3Y-MYDS", "YDG5-W6OI-G0DF-43F2", "YECI-S546-HBAS-OX6P", "YF0U-4BFY-MXM5-V1E8", "YFJB-VLO3-39Q9-VRF7", "YGJU-63JM-BEMG-KKH7", "YH06-TRJZ-7D79-6TFG", "YJYB-JKYM-FNMX-0NG6", "YKID-GQCA-8625-WRFZ", "YLE8-WO82-RFCI-S4GV", "YLPV-TOP6-WP1Z-I4SJ", "YMCV-RDDR-PBQO-2IQV", "YMSW-LSXV-UZQE-RHYF", "YN4N-JHRJ-U5EC-2ME3", "YPQI-3V7A-WS4I-S0GV", "YQZZ-L6C8-OWR7-WPRI", "YS1T-Q07J-8P5V-9I7Y", "YTJ4-2IDF-ETGC-G07I", "YTTQ-80JP-20FV-M3WZ", "YUZE-FMGX-APUB-JB2E", "Z01Q-MZ4E-IPV3-ZJW3", "Z2F8-ZG8X-J5QQ-PZYP", "Z340-HC6K-MNNK-7DRX", "Z5DQ-B1ZV-3X3Y-O3WM", "Z63R-57SE-SUSR-8HSR", "Z6MI-GC8N-5J5B-9TF1", "Z7G3-7XQ7-VMVT-YFZA", "Z98Y-IHT8-IFL6-A34D", "Z9C4-FOKO-KUEJ-YTAS", "ZDAY-OMNB-SE9A-5SFL", "ZENA-5TTI-X5P5-Z65P", "ZFD2-FVS1-81IG-J935", "ZG31-DLMC-S972-J6LO", "ZHB1-F54Z-U4F7-BKHR", "ZJUD-5SQV-X38F-WFS1", "ZJW0-K6X8-YKFL-ZB8F", "ZK6N-E84N-N2TT-PESM", "ZMQ7-X6MW-AWCP-0QPP", "ZQWJ-VL4G-3HBS-VV9Q", "ZR22-7V41-JFA5-ZDQX", "ZVI8-PB6O-FP09-KWBQ", "ZX08-L0BX-H43O-F81W", "ZXAB-C37J-6LCP-7VUY", "ZZQ3-RK8W-HGG7-ZO09"]);
+// نظام التفعيل
+const ACTIVATION_KEY="goods_manager_activation_v1";
+const USED_KEYS_KEY="goods_manager_used_keys_v1";
+
+function normalizeKey(v){
+ return (v||"").trim().toUpperCase().replace(/\s+/g,"");
+}
+function getUsedKeys(){
+ try{return JSON.parse(localStorage.getItem(USED_KEYS_KEY)||"[]")}catch(e){return []}
+}
+function isActivated(){
+ return localStorage.getItem(ACTIVATION_KEY)==="ACTIVATED";
+}
+function activateApp(){
+ const input=document.getElementById("activationInput");
+ const error=document.getElementById("activationError");
+ const key=normalizeKey(input.value);
+ if(!/^[A-Z0-9]{4}(-[A-Z0-9]{4}){3}$/.test(key)){
+   error.textContent="صيغة المفتاح غير صحيحة.";
+   return;
+ }
+ const used=getUsedKeys();
+ if(used.includes(key)){
+   error.innerHTML='هذا المفتاح استُخدم مسبقًا. يرجى التواصل عبر البريد الإلكتروني <a href="mailto:dragon35mania@gmail.com" style="color:#2563eb;font-weight:700;text-decoration:underline">dragon35mania@gmail.com</a>';
+   return;
+ }
+ if(!window.ACTIVATION_KEYS || !window.ACTIVATION_KEYS.has(key)){
+   error.innerHTML='مفتاح التفعيل غير صالح. يرجى التواصل عبر البريد الإلكتروني <a href="mailto:dragon35mania@gmail.com" style="color:#2563eb;font-weight:700;text-decoration:underline">dragon35mania@gmail.com</a>';
+   return;
+ }
+ used.push(key);
+ localStorage.setItem(USED_KEYS_KEY,JSON.stringify(used));
+ localStorage.setItem(ACTIVATION_KEY,"ACTIVATED");
+ document.getElementById("activationGate").classList.remove("show");
+ toast("تم تفعيل التطبيق بنجاح 🔓");
+}
+function checkActivation(){
+ const gate=document.getElementById("activationGate");
+ if(!isActivated())gate.classList.add("show");
+}
+document.getElementById("activateBtn").onclick=activateApp;
+document.getElementById("activationInput").addEventListener("keydown",e=>{if(e.key==="Enter")activateApp()});
+document.getElementById("activationInput").addEventListener("input",e=>{
+ let v=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,16);
+ e.target.value=v.match(/.{1,4}/g)?.join("-")||"";
+});
+
+renderAll();
+checkActivation();
+</script>
+<script>
+window.addEventListener("load",function(){
+  setTimeout(function(){
+    const s=document.getElementById("splashScreen");
+    if(s){s.classList.add("hide");setTimeout(()=>s.remove(),500);}
+  },1200);
+});
+</script>
+</body>
+</html>
